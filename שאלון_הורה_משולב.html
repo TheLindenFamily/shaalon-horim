@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>שאלון הורה משולב | נועה שביט ויעל שוורץ</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --blue: #1a4a6b;
+  --blue-light: #e8f4fd;
+  --orange: #f5a623;
+  --orange-light: #fff3e0;
+  --green: #27ae60;
+  --red: #c0392b;
+  --gray: #f4f6f9;
+  --border: #cdd7e0;
+  --text: #222;
+  --sub: #555;
+}
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: var(--gray);
+  color: var(--text);
+  direction: rtl;
+  text-align: right;
+  font-size: 16px;
+}
+
+/* ===== STICKY PROGRESS ===== */
+.progress-bar-wrap {
+  position: sticky; top: 0; z-index: 200;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+.progress-track { height: 5px; background: #e0e0e0; }
+.progress-fill { height: 100%; background: var(--orange); transition: width 0.4s; width: 0%; }
+.progress-label { text-align: center; font-size: 0.75rem; color: #888; padding: 4px 0 5px; }
+
+/* ===== HEADER ===== */
+.page-header {
+  background: var(--blue);
+  color: white;
+  text-align: center;
+  padding: 36px 16px 28px;
+}
+.page-header h1 { font-size: clamp(1.5rem, 5vw, 2.2rem); margin-bottom: 8px; }
+.page-header .subtitle { color: #7ec8e3; font-size: clamp(0.9rem, 3vw, 1.1rem); margin-bottom: 6px; }
+.page-header .authors { font-size: 0.9rem; opacity: 0.8; }
+
+/* ===== SETUP PANEL ===== */
+.setup-panel {
+  max-width: 800px; margin: 20px auto 0; padding: 0 12px;
+}
+.setup-toggle {
+  background: white; border: 2px solid var(--orange); border-radius: 10px;
+  padding: 14px 18px; cursor: pointer; width: 100%;
+  display: flex; align-items: center; gap: 10px; font-size: 0.95rem;
+  font-weight: 700; color: #c67c00; transition: background 0.2s;
+}
+.setup-toggle:hover { background: var(--orange-light); }
+.setup-toggle .arrow { margin-right: auto; transition: transform 0.3s; font-size: 1.2rem; }
+.setup-toggle.open .arrow { transform: rotate(180deg); }
+.setup-body {
+  display: none; background: white; border: 2px solid var(--orange);
+  border-top: none; border-radius: 0 0 10px 10px; padding: 20px;
+}
+.setup-body.open { display: block; }
+.setup-step { margin-bottom: 18px; }
+.setup-step h4 { color: var(--blue); margin-bottom: 8px; font-size: 0.95rem; }
+.code-block {
+  background: #1e1e2e; color: #cdd6f4; border-radius: 8px;
+  padding: 14px 16px; font-family: monospace; font-size: 0.8rem;
+  direction: ltr; text-align: left; overflow-x: auto;
+  line-height: 1.6; white-space: pre; margin: 8px 0;
+}
+.setup-url-input {
+  width: 100%; border: 1.5px solid var(--border); border-radius: 6px;
+  padding: 10px 12px; font-size: 0.9rem; direction: ltr; text-align: left;
+  margin-top: 6px; background: #fafcfe;
+}
+.setup-url-input:focus { outline: none; border-color: var(--blue); }
+.btn-save-url {
+  margin-top: 8px; background: var(--green); color: white;
+  border: none; border-radius: 6px; padding: 8px 20px;
+  font-size: 0.9rem; cursor: pointer; font-weight: 600;
+}
+.url-status { font-size: 0.82rem; margin-top: 6px; }
+.url-status.ok { color: var(--green); }
+.url-status.missing { color: var(--red); }
+
+/* ===== WRAPPER ===== */
+.wrapper { max-width: 800px; margin: 0 auto; padding: 0 12px; }
+
+/* ===== INTRO / TOC ===== */
+.intro-box {
+  background: #fff8e1; border-right: 5px solid var(--orange);
+  border-radius: 8px; padding: 16px 18px; margin: 20px 0;
+  font-size: 0.95rem; line-height: 1.7;
+}
+.toc {
+  background: white; border-radius: 10px; padding: 18px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin-bottom: 24px;
+}
+.toc h3 { color: var(--blue); margin-bottom: 10px; font-size: 1rem; }
+.toc ul { list-style: none; }
+.toc li { padding: 4px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.9rem; }
+.toc li:last-child { border-bottom: none; }
+.toc a { color: var(--blue); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+
+/* ===== SECTION ===== */
+.section {
+  background: white; border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  margin-bottom: 24px; overflow: hidden;
+}
+.section-header { background: var(--blue); color: white; padding: 14px 20px; }
+.section-header .part-label { font-size: 0.8rem; opacity: 0.75; }
+.section-header h2 { font-size: clamp(1.1rem, 4vw, 1.4rem); margin: 2px 0; }
+.section-header .section-sub { font-size: 0.85rem; color: #7ec8e3; margin-top: 2px; }
+.section-body { padding: 20px; }
+
+/* ===== INFO / VIDEO BOXES ===== */
+.info-box {
+  background: var(--blue-light); border-right: 4px solid var(--blue);
+  border-radius: 6px; padding: 12px 14px; margin-bottom: 18px;
+  font-size: 0.88rem; line-height: 1.65; font-style: italic; color: #333;
+}
+.video-box {
+  background: var(--orange-light); border: 2px dashed var(--orange);
+  border-radius: 8px; padding: 16px; margin-bottom: 16px; text-align: center;
+}
+.video-box .video-icon { font-size: 1.8rem; margin-bottom: 6px; }
+.video-box strong { color: #c67c00; display: block; margin-bottom: 6px; font-size: 0.95rem; }
+.video-box p { font-size: 0.85rem; color: #555; line-height: 1.6; }
+
+/* ===== VIDEO UPLOAD ===== */
+.video-upload-area { margin-top: 14px; }
+.video-upload-label {
+  display: block; font-weight: 700; color: var(--blue); margin-bottom: 6px; font-size: 0.9rem;
+}
+.video-file-input { display: none; }
+.video-choose-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--blue); color: white; border: none;
+  border-radius: 8px; padding: 10px 18px; cursor: pointer;
+  font-size: 0.9rem; font-weight: 600; margin-bottom: 10px;
+  transition: background 0.2s;
+}
+.video-choose-btn:hover { background: #14375a; }
+.video-preview-wrap {
+  display: none; margin-top: 10px; text-align: right;
+}
+.video-preview-wrap video {
+  width: 100%; max-width: 360px; border-radius: 8px;
+  border: 2px solid var(--border); background: #000;
+}
+.video-filename {
+  font-size: 0.82rem; color: #666; margin-top: 4px;
+  word-break: break-all;
+}
+.video-change-btn {
+  background: none; border: 1px solid var(--border); border-radius: 6px;
+  padding: 5px 12px; font-size: 0.82rem; cursor: pointer;
+  color: var(--blue); margin-top: 6px;
+}
+.drive-upload-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #34a853; color: white; border: none;
+  border-radius: 8px; padding: 11px 20px; cursor: pointer;
+  font-size: 0.92rem; font-weight: 700; margin-top: 10px;
+  text-decoration: none; transition: background 0.2s;
+  width: 100%; justify-content: center;
+}
+.drive-upload-btn:hover { background: #2d8f47; }
+.drive-upload-note { font-size: 0.78rem; color: #666; margin-top: 6px; text-align: center; }
+.whatsapp-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  background: #25d366; color: white; border: none;
+  border-radius: 10px; padding: 14px 20px;
+  font-size: 1rem; font-weight: 700; margin-top: 12px;
+  text-decoration: none; transition: background 0.2s; width: 100%;
+}
+.whatsapp-btn:hover { background: #1ebe5d; }
+.whatsapp-note { font-size: 0.8rem; color: #666; margin-top: 8px; text-align: center; }
+.drive-link-group { margin-top: 10px; }
+.drive-link-group label { font-size: 0.85rem; color: #555; display: block; margin-bottom: 4px; }
+.drive-link-group input {
+  width: 100%; border: 1.5px solid var(--border); border-radius: 6px;
+  padding: 8px 12px; font-size: 0.88rem; direction: ltr; text-align: left;
+  background: #fafcfe;
+}
+.drive-link-group input:focus { outline: none; border-color: var(--blue); }
+
+/* ===== FORM ELEMENTS ===== */
+.form-group { margin-bottom: 20px; }
+.form-group > label {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-weight: 600; margin-bottom: 8px; color: var(--blue);
+  font-size: 0.95rem; line-height: 1.5;
+}
+.q-num {
+  background: var(--blue); color: white; border-radius: 50%;
+  min-width: 24px; height: 24px; display: inline-flex;
+  align-items: center; justify-content: center;
+  font-size: 0.78rem; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+}
+
+textarea, input[type="text"], input[type="tel"] {
+  width: 100%; border: 1.5px solid var(--border); border-radius: 6px;
+  padding: 10px 12px; font-family: inherit; font-size: 0.95rem;
+  direction: rtl; background: #fafcfe; transition: border 0.2s;
+  -webkit-appearance: none;
+}
+textarea { resize: vertical; min-height: 80px; }
+textarea:focus, input[type="text"]:focus, input[type="tel"]:focus {
+  outline: none; border-color: var(--blue); background: white;
+}
+
+/* ===== IDENTITY TABLE ===== */
+.identity-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.identity-table th {
+  background: var(--blue); color: white; padding: 10px 10px;
+  text-align: right; font-weight: 600;
+}
+.identity-table td {
+  padding: 7px 6px; border-bottom: 1px solid #e8ecf0; vertical-align: middle;
+}
+.identity-table td:first-child {
+  font-weight: 700; color: var(--blue); width: 22%; padding-right: 10px; font-size: 0.82rem;
+}
+.identity-table tr:nth-child(even) td { background: #f7f9fc; }
+.identity-table input[type="text"] {
+  border: 1px solid var(--border); padding: 6px 8px; font-size: 0.85rem;
+}
+
+/* Mobile identity table scroll */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* ===== CHECKBOXES ===== */
+.checkbox-list { list-style: none; }
+.checkbox-list li {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 10px; border-radius: 6px; margin-bottom: 2px;
+  cursor: pointer; transition: background 0.15s;
+}
+.checkbox-list li:hover { background: #f0f5ff; }
+.checkbox-list input[type="checkbox"] {
+  width: 20px; height: 20px; margin-top: 1px; flex-shrink: 0;
+  cursor: pointer; accent-color: var(--blue);
+}
+.checkbox-list label { cursor: pointer; font-weight: normal; color: #333; font-size: 0.93rem; line-height: 1.5; }
+
+/* ===== LIKERT TABLE ===== */
+.likert-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.likert-table { width: 100%; border-collapse: collapse; font-size: 0.87rem; min-width: 480px; }
+.likert-table th {
+  background: var(--blue); color: white; padding: 10px 8px; text-align: center; font-weight: 600;
+}
+.likert-table th:first-child { text-align: right; padding-right: 12px; }
+.likert-table td {
+  padding: 10px 8px; text-align: center; border-bottom: 1px solid #e8ecf0;
+}
+.likert-table td:first-child { text-align: right; padding-right: 12px; font-size: 0.9rem; }
+.likert-table tr:nth-child(even) td { background: #f7f9fc; }
+.likert-table input[type="radio"] {
+  width: 20px; height: 20px; accent-color: var(--blue); cursor: pointer;
+}
+
+/* Mobile Likert — card style */
+@media (max-width: 540px) {
+  .likert-table, .likert-table thead, .likert-table tbody,
+  .likert-table tr, .likert-table th, .likert-table td { display: block; }
+  .likert-wrap { overflow-x: unset; }
+  .likert-table thead { display: none; }
+  .likert-table tr {
+    background: white; border: 1px solid #e0e6ed; border-radius: 8px;
+    margin-bottom: 10px; padding: 10px 12px;
+  }
+  .likert-table tr:nth-child(even) td { background: unset; }
+  .likert-table td { padding: 4px 0; border: none; text-align: right; font-size: 0.9rem; }
+  .likert-table td:first-child { font-weight: 700; color: var(--blue); margin-bottom: 8px; }
+  .likert-table td[data-label]::before {
+    content: attr(data-label) ": "; font-weight: 600; color: #555;
+  }
+  .likert-mobile-options {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px;
+  }
+  .likert-mobile-options label {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    font-size: 0.75rem; color: #555; cursor: pointer;
+  }
+  .likert-mobile-options input[type="radio"] { width: 22px; height: 22px; }
+}
+
+/* ===== RATING 1-5 ===== */
+.rating-wrapper {
+  margin-top: 12px;
+}
+.rating-labels-row {
+  display: flex; justify-content: space-between;
+  font-size: 0.75rem; color: #888; margin-bottom: 6px; padding: 0 4px;
+}
+.rating-btns {
+  display: flex; gap: 8px; justify-content: center;
+}
+.rating-end-label { display: none; }
+.rating-btn { position: relative; flex: 1; max-width: 52px; }
+.rating-btn input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+.rating-btn label {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; aspect-ratio: 1; border: 2px solid var(--border); border-radius: 50%;
+  cursor: pointer; font-weight: 700; font-size: 1rem; color: #666;
+  transition: all 0.15s; background: white;
+}
+.rating-btn input[type="radio"]:checked + label {
+  background: var(--blue); border-color: var(--blue); color: white;
+}
+.rating-btn label:hover { border-color: var(--blue); color: var(--blue); }
+
+/* ===== REFLEX TABLE ===== */
+.reflex-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.reflex-table th { background: var(--blue); color: white; padding: 10px 12px; text-align: right; }
+.reflex-table td { padding: 10px 10px; border-bottom: 1px solid #e8ecf0; vertical-align: middle; }
+.reflex-table td:first-child { font-weight: 700; }
+.reflex-table select {
+  border: 1.5px solid var(--border); border-radius: 6px; padding: 7px 10px;
+  font-family: inherit; font-size: 0.9rem; background: #fafcfe; width: 100%;
+}
+
+/* ===== SUBSECTION TITLE ===== */
+.subsection-title {
+  font-weight: 700; color: var(--blue); font-size: 0.97rem;
+  margin: 20px 0 10px; border-bottom: 2px solid #e8ecf0; padding-bottom: 6px;
+}
+
+/* ===== SUBMIT ===== */
+.submit-area {
+  text-align: center; margin-bottom: 40px;
+  padding: 24px 12px; background: white; border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.btn-submit {
+  background: var(--blue); color: white; border: none;
+  padding: 16px 48px; font-size: 1.05rem; font-weight: 700;
+  border-radius: 30px; cursor: pointer;
+  box-shadow: 0 4px 14px rgba(26,74,107,0.3);
+  transition: background 0.2s, transform 0.1s;
+  width: 100%; max-width: 340px;
+}
+.btn-submit:hover { background: #14375a; transform: translateY(-1px); }
+.btn-submit:active { transform: translateY(0); }
+.submit-note { margin-top: 12px; font-size: 0.82rem; color: #666; line-height: 1.6; }
+
+/* ===== FOOTER ===== */
+.footer {
+  text-align: center; padding: 20px; font-size: 0.82rem; color: #888;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* ===== SUCCESS OVERLAY ===== */
+#success-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(26,74,107,0.92); z-index: 9999;
+  align-items: center; justify-content: center; padding: 16px;
+}
+#success-overlay.show { display: flex; }
+.success-card {
+  background: white; border-radius: 16px; padding: 32px 24px;
+  max-width: 420px; width: 100%; text-align: center;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+}
+.success-card .icon { font-size: 2.5rem; margin-bottom: 12px; }
+.success-card h2 { color: var(--blue); margin-bottom: 10px; font-size: 1.3rem; }
+.success-card p { color: #555; font-size: 0.9rem; line-height: 1.65; margin-bottom: 16px; }
+.success-steps { text-align: right; margin: 12px 0; }
+.success-steps li { padding: 4px 0; font-size: 0.88rem; color: #333; }
+.btn-close-success {
+  background: var(--blue); color: white; border: none;
+  padding: 10px 32px; border-radius: 20px; cursor: pointer;
+  font-size: 0.95rem; font-weight: 600; width: 100%; margin-top: 6px;
+}
+
+/* ===== TOAST ===== */
+#toast {
+  position: fixed; bottom: 24px; right: 50%; transform: translateX(50%);
+  background: #333; color: white; border-radius: 8px; padding: 12px 20px;
+  font-size: 0.9rem; z-index: 9998; opacity: 0; transition: opacity 0.3s;
+  pointer-events: none; max-width: 90%;
+}
+#toast.show { opacity: 1; }
+
+/* ===== GENERAL MOBILE ===== */
+@media (max-width: 600px) {
+  .section-body { padding: 14px; }
+  .identity-table td:first-child { width: 28%; font-size: 0.78rem; }
+  .rating-btn label { width: 36px; height: 36px; font-size: 0.9rem; }
+  .reflex-table { font-size: 0.82rem; }
+  .reflex-table th, .reflex-table td { padding: 8px 6px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Progress -->
+<div class="progress-bar-wrap">
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">השלמת הטופס: 0%</div>
+</div>
+
+<!-- Header -->
+<div class="page-header">
+  <h1>שאלון הורה משולב</h1>
+  <div class="subtitle">פיילוט קליני: גמילה, ויסות חושי וקשר הורה-ילד</div>
+  <div class="authors">נועה שביט ויעל שוורץ</div>
+</div>
+
+<!-- Google Sheets Setup Panel -->
+<div class="setup-panel" style="display:none">
+  <button type="button" class="setup-toggle" id="setupToggle" onclick="toggleSetup()">
+    ⚙️ הגדרת חיבור ל-Google Sheets (לטיפולנית בלבד)
+    <span class="arrow">▼</span>
+  </button>
+  <div class="setup-body" id="setupBody">
+    <div class="setup-step">
+      <h4>שלב 1 — פתחי את script.google.com והדביקי את הקוד הבא</h4>
+      <p style="font-size:0.85rem;color:#555;margin-bottom:6px;">פתחי <a href="https://script.google.com" target="_blank" style="color:var(--blue)">script.google.com</a> → פרויקט חדש → מחקי את הקוד הקיים → הדביקי:</p>
+      <div class="code-block">const SHEET_NAME = 'תשובות';
+const SPREADSHEET_ID = '1yi87M_Ce4AXKb1SfSpf8inu46UVEl900NM1J13YDkBk';
+
+function doPost(e) {
+  try {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    let sheet = ss.getSheetByName(SHEET_NAME);
+    if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
+    const data = JSON.parse(e.postData.contents);
+    const keys = Object.keys(data);
+    if (sheet.getLastRow() === 0) sheet.appendRow(keys);
+    sheet.appendRow(keys.map(k => data[k] || ''));
+    return ContentService
+      .createTextOutput(JSON.stringify({status:'ok'}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({status:'error',msg:err.message}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}</div>
+    </div>
+    <div class="setup-step">
+      <h4>שלב 2: פרסמי כ-Web App</h4>
+      <p style="font-size:0.85rem;color:#555;">פרסי → פרסם כ-Web App → הרץ בשם: "אני" → גישה: "כל אחד" → פרסם → העתיקי את ה-URL.</p>
+    </div>
+    <div class="setup-step">
+      <h4>שלב 3: הדביקי את ה-URL כאן</h4>
+      <input type="text" class="setup-url-input" id="appsScriptUrl" placeholder="https://script.google.com/macros/s/.../exec" dir="ltr">
+      <br>
+      <button type="button" class="btn-save-url" onclick="saveAppsScriptUrl()">💾 שמור URL</button>
+      <div class="url-status" id="urlStatus"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Main wrapper -->
+<div class="wrapper">
+
+<div class="intro-box" style="margin-top:20px;">
+  <strong>הורים יקרים, שלום רב!</strong><br>
+  אנא קיראו ומלאו בתשומת לב את השאלון הבא. בחלקים ג, ד, ה תתבקשו לצלם סרטון ולהעלות אותו ישירות בטופס. תודה על השתתפותכם.
+</div>
+
+<div class="toc">
+  <h3>מה כולל השאלון?</h3>
+  <ul>
+    <li><a href="#partA">חלק א: פרטי זיהוי ורקע משפחתי</a></li>
+    <li><a href="#partB">חלק ב: היסטוריית גמילה ותפקוד נוכחי</a></li>
+    <li><a href="#partC">חלק ג: מבדק מודעות גוף (צילום)</a></li>
+    <li><a href="#partD">חלק ד: מבדק תנועה במרחב (צילום)</a></li>
+    <li><a href="#partE">חלק ה: בדיקת רפלקסים פרימיטיביים (צילום)</a></li>
+    <li><a href="#partF">חלק ו: פרופיל חושי</a></li>
+    <li><a href="#partG">חלק ז: השפעת ההרטבה על הילד, PinQ</a></li>
+    <li><a href="#partH">חלק ח: הנרטיב הרגשי של הילד</a></li>
+    <li><a href="#partI">חלק ט: פרשנות ההורה</a></li>
+  </ul>
+</div>
+
+<form id="mainForm" onsubmit="submitForm(event)">
+
+<!-- ===== חלק א ===== -->
+<div class="section" id="partA">
+  <div class="section-header">
+    <div class="part-label">חלק א</div>
+    <h2>פרטי זיהוי ורקע משפחתי</h2>
+    <div class="section-sub">רקע כללי</div>
+  </div>
+  <div class="section-body">
+    <div class="info-box">מטרה: לבנות תמונה מלאה של ההיסטוריה המשפחתית ולזהות דפוסים תורשתיים. אם פרט אינו רלוונטי, השאירו ריק.</div>
+    <div class="table-scroll">
+    <table class="identity-table">
+      <thead><tr><th>קטגוריה</th><th>פרטי האם</th><th>פרטי האב</th><th>פרטי הילד/ה</th></tr></thead>
+      <tbody>
+        <tr><td>שם מלא</td><td><input type="text" name="mother_name" placeholder="שם האם"></td><td><input type="text" name="father_name" placeholder="שם האב"></td><td><input type="text" name="child_name" placeholder="שם הילד/ה"></td></tr>
+        <tr><td>עיסוק</td><td><input type="text" name="mother_job" placeholder="עיסוק"></td><td><input type="text" name="father_job" placeholder="עיסוק"></td><td><input type="text" name="child_job" placeholder="—"></td></tr>
+        <tr><td>טלפון</td><td><input type="tel" name="mother_phone" placeholder="טלפון"></td><td><input type="tel" name="father_phone" placeholder="טלפון"></td><td><input type="tel" name="child_phone" placeholder="—"></td></tr>
+        <tr><td>תאריך לידה</td><td><input type="text" name="mother_dob" placeholder="תאריך לידה"></td><td><input type="text" name="father_dob" placeholder="תאריך לידה"></td><td><input type="text" name="child_dob" placeholder="תאריך לידה"></td></tr>
+        <tr><td>כיתה ומוסד</td><td><input type="text" name="mother_school" placeholder="—"></td><td><input type="text" name="father_school" placeholder="—"></td><td><input type="text" name="child_school" placeholder="כיתה ומוסד"></td></tr>
+        <tr><td>אחים</td><td><input type="text" name="mother_siblings" placeholder="—"></td><td><input type="text" name="father_siblings" placeholder="—"></td><td><input type="text" name="child_siblings" placeholder="שמות וגילאים"></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="subsection-title">רקע משפחתי ותורשתי</div>
+    <div class="form-group">
+      <label>האם קיימת היסטוריה משפחתית של גמילה מאוחרת, קשיים בשליטה על סוגרים או הרטבת לילה? אנא פרטו:</label>
+      <textarea name="family_history" rows="4" placeholder="פרטו כאן..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ===== חלק א2 ===== -->
+<div class="section" id="partA2">
+  <div class="section-header">
+    <div class="part-label">חלק א: המשך</div>
+    <h2>היסטוריה התפתחותית ורפואית</h2>
+    <div class="section-sub">רקע לידה והתפתחות</div>
+  </div>
+  <div class="section-body">
+    <div class="info-box">מטרה: לזהות גורמים נוירולוגיים והתפתחותיים שעשויים להשפיע על הגמילה.</div>
+
+    <div class="subsection-title">הריון ולידה</div>
+
+    <div class="form-group">
+      <label><span class="q-num">1</span>שבוע לידה:</label>
+      <input type="text" name="birth_week" placeholder="לדוגמה: 39 שבועות">
+    </div>
+
+    <div class="form-group">
+      <label><span class="q-num">2</span>צהבת ילודים. האם היתה? אם כן, פרטו (חומרה, טיפול):</label>
+      <textarea name="jaundice" rows="2" placeholder="תארו כאן..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label><span class="q-num">3</span>הנקה. האם היתה? אם כן, כמה זמן?</label>
+      <textarea name="breastfeeding" rows="2" placeholder="תארו כאן..."></textarea>
+    </div>
+
+    <div class="subsection-title">חיסונים</div>
+
+    <div class="form-group">
+      <label><span class="q-num">4</span>האם הילד קיבל את כל החיסונים המומלצים?</label>
+      <textarea name="vaccines" rows="2" placeholder="תארו כאן..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label><span class="q-num">5</span>האם הייתה תגובה לחיסונים כלשהם? אם כן, פרטו:</label>
+      <textarea name="vaccine_reaction" rows="2" placeholder="תארו כאן..."></textarea>
+    </div>
+
+    <div class="subsection-title">שלבי התפתחות</div>
+
+    <div class="form-group">
+      <label><span class="q-num">6</span>האם הילד פיספס שלב התפתחותי כלשהו (זחילה, הליכה, דיבור)? אם כן, פרטו:</label>
+      <textarea name="dev_stages" rows="3" placeholder="תארו כאן..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label><span class="q-num">7</span>מתי התחיל ללכת?</label>
+      <input type="text" name="walking_age" placeholder="לדוגמה: גיל שנה וחצי">
+    </div>
+
+    <div class="subsection-title">אבחונים וטראומה</div>
+
+    <div class="form-group">
+      <label><span class="q-num">8</span>האם עבר אבחונים כלשהם? אם כן, פרטו:</label>
+      <textarea name="diagnoses" rows="3" placeholder="לדוגמה: קשב וריכוז, עיבוד חושי, דיסלקציה..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label><span class="q-num">9</span>האם חווה טראומה? אם כן, גיל ופירוט:</label>
+      <textarea name="trauma" rows="3" placeholder="תארו כאן..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label><span class="q-num">10</span>האם הילד נבהל בקלות?</label>
+      <textarea name="startle_response" rows="2" placeholder="תארו כאן..."></textarea>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== חלק ב ===== -->
+<div class="section" id="partB">
+  <div class="section-header">
+    <div class="part-label">חלק ב</div>
+    <h2>היסטוריית גמילה ותפקוד נוכחי</h2>
+    <div class="section-sub">אבחון קליני</div>
+  </div>
+  <div class="section-body">
+    <div class="info-box">מטרה: לזהות דפוסים חוזרים, נסיגות ורמת מודעות הילד לגופו. ענו בחופשיות ובכנות. אין תשובות נכונות או שגויות.</div>
+    <p style="font-weight:700;margin-bottom:16px;color:var(--blue);">נא לתאר את התהליך הכרונולוגי והדפוסים הנוכחיים:</p>
+
+    <div class="form-group"><label><span class="q-num">1</span>היסטוריית גמילה: מתי התחיל התהליך? האם היו הפסקות ממושכות או נסיגות משמעותיות?</label><textarea name="b1" rows="3" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">2</span>אפיון פספוסים: תדירות וזמנים ביום. האם קיימת מודעות לרטיבות? האם הילד מדווח או מפגין אדישות?</label><textarea name="b2" rows="3" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">3</span>הרטבת לילה: עומק השינה, תגובת הילד להתעוררות ברטיבות (בושה, אדישות, צחוק)?</label><textarea name="b3" rows="3" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">4</span>האם קיימת נטייה לעצירות כרונית?</label><textarea name="b4" rows="2" placeholder="תארו כאן..."></textarea></div>
+
+    <div class="subsection-title">דפוסי תגובה רגשית</div>
+    <div class="info-box">ילדים לעיתים שולחים 'רמזים מוטעים' כגון צחוק או אדישות כהגנה מפני בושה. זיהוי דפוסים אלו חיוני להבנת הילד.</div>
+    <div class="form-group"><label><span class="q-num">5</span>האם הילד משדר רמזים מוטעים (צחוק מעושה, 'לא אכפת לי') לאחר פספוס?</label><textarea name="b5" rows="3" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">6</span>האם הילד נמנע משימוש בשירותים במקומות זרים?</label><textarea name="b6" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">7</span>מה התחושה שעולה בכם בגילוי של סדין רטוב או פספוס?</label><textarea name="b7" rows="3" placeholder="תארו כאן..."></textarea></div>
+  </div>
+</div>
+
+<!-- ===== חלק ג ===== -->
+<div class="section" id="partC">
+  <div class="section-header">
+    <div class="part-label">חלק ג</div>
+    <h2>מבדק מודעות גוף</h2>
+    <div class="section-sub">צילום ושליחה</div>
+  </div>
+  <div class="section-body">
+    <div class="info-box">מטרה: לבדוק את מידת מודעות הילד לאזורי גופו — מיומנות הכרחית לגמילה. צלמו סרטון בו הילד מזהה את האיברים באופן עצמאי לחלוטין, ללא הנחיה.</div>
+    <div class="video-box">
+      <div class="video-icon">🎥</div>
+      <strong>חזרו על הבדיקה 3 פעמים. צלמו ושלחו</strong>
+      <p>על הילד לזהות ולשמות באופן עצמאי:<br><strong>ראש, כתפיים, בטן, גב, צוואר, יד, טוסיק, ברך, מרפק</strong><br><br>שימו לב במיוחד לזיהוי <strong>טוסיק</strong> ו<strong>בטן</strong>, חוסר מודעות לאזורים אלו מקושר לאתגרי גמילה.</p>
+    </div>
+
+    <div class="video-upload-area">
+      <p style="font-size:0.9rem;color:#555;margin-bottom:8px;">לאחר הצילום, שלחו את הסרטון לנועה ישירות מהגלריה שלכם:</p>
+      <a href="https://wa.me/447488315303?text=שלום%20נועה%2C%20שולח%2Fת%20סרטון%20ממבדק%20מודעות%20גוף" target="_blank" class="whatsapp-btn">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        שלחו את הסרטון לנועה ב-WhatsApp
+      </a>
+      <div class="whatsapp-note">פתחו את הגלריה בטלפון, בחרו את הסרטון וצרפו לשיחה.</div>
+    </div>
+
+    <div class="form-group" style="margin-top:14px;">
+      <label>האיברים שהילד זיהה ללא קושי:</label>
+      <ul class="checkbox-list">
+        <li><input type="checkbox" id="c_rosh" name="body_parts" value="ראש"><label for="c_rosh">ראש</label></li>
+        <li><input type="checkbox" id="c_ktefayim" name="body_parts" value="כתפיים"><label for="c_ktefayim">כתפיים</label></li>
+        <li><input type="checkbox" id="c_beten" name="body_parts" value="בטן"><label for="c_beten">בטן</label></li>
+        <li><input type="checkbox" id="c_gav" name="body_parts" value="גב"><label for="c_gav">גב</label></li>
+        <li><input type="checkbox" id="c_tzavar" name="body_parts" value="צוואר"><label for="c_tzavar">צוואר</label></li>
+        <li><input type="checkbox" id="c_yad" name="body_parts" value="יד"><label for="c_yad">יד</label></li>
+        <li><input type="checkbox" id="c_tusik" name="body_parts" value="טוסיק"><label for="c_tusik">טוסיק</label></li>
+        <li><input type="checkbox" id="c_birkayim" name="body_parts" value="ברך"><label for="c_birkayim">ברך</label></li>
+        <li><input type="checkbox" id="c_marpek" name="body_parts" value="מרפק"><label for="c_marpek">מרפק</label></li>
+      </ul>
+    </div>
+    <div class="form-group">
+      <label>הערות על הבדיקה:</label>
+      <textarea name="c_notes" rows="3" placeholder="תארו מה הבחנתם..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ===== חלק ד ===== -->
+<div class="section" id="partD">
+  <div class="section-header">
+    <div class="part-label">חלק ד</div>
+    <h2>מבדק תנועה במרחב ותכנון תנועה</h2>
+    <div class="section-sub">צילום ושליחה</div>
+  </div>
+  <div class="section-body">
+    <div class="info-box">מטרה: לבחון את הבשלות הנוירולוגית דרך איכות התנועה. צלמו את הילד מבצע את שתי הפעולות.</div>
+    <div class="video-box">
+      <div class="video-icon">🎥</div>
+      <strong>חזרו על הבדיקה 3 פעמים. צלמו ושלחו</strong>
+    </div>
+
+    <div class="video-upload-area">
+      <p style="font-size:0.9rem;color:#555;margin-bottom:8px;">לאחר הצילום, שלחו את הסרטון לנועה ישירות מהגלריה שלכם:</p>
+      <a href="https://wa.me/447488315303?text=שלום%20נועה%2C%20שולח%2Fת%20סרטון%20ממבדק%20תנועה" target="_blank" class="whatsapp-btn">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        שלחו את הסרטון לנועה ב-WhatsApp
+      </a>
+      <div class="whatsapp-note">לחיצה תפתח שיחה עם נועה. צרפו את הסרטון ושלחו.</div>
+    </div>
+
+    <div class="form-group" style="margin-top:14px;">
+      <label><strong>הליכה קדימה ואחורה:</strong> האם התנועה זורמת או מסורבלת?</label>
+      <textarea name="d_forward" rows="3" placeholder="תארו כאן..."></textarea>
+    </div>
+    <div class="form-group">
+      <label><strong>הליכה צידית ("צעדי רדיפה"):</strong> האם הילד מבצע בצורה זורמת?</label>
+      <textarea name="d_sideways" rows="3" placeholder="תארו כאן..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ===== חלק ה ===== -->
+<div class="section" id="partE">
+  <div class="section-header">
+    <div class="part-label">חלק ה</div>
+    <h2>בדיקת רפלקסים פרימיטיביים</h2>
+    <div class="section-sub">Spinal Reflexes</div>
+  </div>
+  <div class="section-body">
+    <div class="info-box">מטרה: לבדוק האם רפלקסים פרימיטיביים שלא הוטמעו מגרים את שלפוחית השתן, אחת הסיבות השכיחות להרטבת לילה.</div>
+    <div class="video-box">
+      <div class="video-icon">🎥</div>
+      <strong>חזרו על הבדיקה 3 פעמים. צלמו ושלחו</strong>
+      <p><strong>פרוטוקול:</strong> הילד ב'עמידת שש' (Crawling position). השתמשו בעט או בקצה האצבע.<br>
+      <strong>Spinal Galant:</strong> מגע מלמעלה למטה לאורך צידי עמוד השדרה.<br>
+      <strong>Spinal Perez:</strong> מגע מהאגן לכיוון העורף (מלמטה למעלה).<br><br>
+      דירוג: 0 = אין תגובה | 4 = רפלקס פעיל מאוד</p>
+    </div>
+
+    <div class="video-upload-area">
+      <p style="font-size:0.9rem;color:#555;margin-bottom:8px;">לאחר הצילום, שלחו את הסרטון לנועה ישירות מהגלריה שלכם:</p>
+      <a href="https://wa.me/447488315303?text=שלום%20נועה%2C%20שולח%2Fת%20סרטון%20מבדיקת%20רפלקסים" target="_blank" class="whatsapp-btn">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        שלחו את הסרטון לנועה ב-WhatsApp
+      </a>
+      <div class="whatsapp-note">לחיצה תפתח שיחה עם נועה. צרפו את הסרטון ושלחו.</div>
+    </div>
+
+    <div class="table-scroll" style="margin-top:14px;">
+    <table class="reflex-table">
+      <thead><tr><th>רפלקס</th><th>דירוג (0–4)</th><th>הערות</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Spinal Galant</td>
+          <td><select name="galant_score"><option value="">בחרו...</option><option value="0">0: אין תגובה</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4: פעיל מאוד</option></select></td>
+          <td><input type="text" name="galant_notes" placeholder="תגובות שהבחנתם..."></td>
+        </tr>
+        <tr>
+          <td>Spinal Perez</td>
+          <td><select name="perez_score"><option value="">בחרו...</option><option value="0">0: אין תגובה</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4: פעיל מאוד</option></select></td>
+          <td><input type="text" name="perez_notes" placeholder="תגובות שהבחנתם..."></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== חלק ו ===== -->
+<div class="section" id="partF">
+  <div class="section-header">
+    <div class="part-label">חלק ו</div>
+    <h2>פרופיל חושי</h2>
+    <div class="section-sub">Sensory Profile</div>
+  </div>
+  <div class="section-body">
+    <div class="info-box">מטרה: לזהות כיצד מערכת העצבים של הילד מעבדת קלט חושי. סמנו ✓ ליד כל מאפיין שבולט אצל ילדכם.</div>
+    <p style="font-weight:700;margin-bottom:14px;color:var(--blue);">נא לסמן את המאפיינים הבולטים אצל ילדכם:</p>
+    <ul class="checkbox-list">
+      <li><input type="checkbox" id="s1" name="sensory" value="רתיעה ממגע, חיבוקים או קרבה פיזית"><label for="s1">רתיעה ממגע, חיבוקים או קרבה פיזית</label></li>
+      <li><input type="checkbox" id="s2" name="sensory" value="רגישות לתפרים בגרביים, תוויות בבגדים או מרקמי בד"><label for="s2">רגישות לתפרים בגרביים, תוויות בבגדים או מרקמי בד (ג'ינס)</label></li>
+      <li><input type="checkbox" id="s3" name="sensory" value="הימנעות מחול, דשא או לכלוך על הידיים/פנים"><label for="s3">הימנעות מחול, דשא או לכלוך על הידיים/פנים</label></li>
+      <li><input type="checkbox" id="s4" name="sensory" value="רגישות לאור חזק, רעשים פתאומיים או ריחות"><label for="s4">רגישות לאור חזק, רעשים פתאומיים או ריחות (בשמים, אוכל)</label></li>
+      <li><input type="checkbox" id="s5" name="sensory" value="סלידה ממרקמי אוכל וצורך בהפרדת מאכלים בצלחת"><label for="s5">סלידה ממרקמי אוכל מסוימים וצורך בהפרדת מאכלים בצלחת</label></li>
+      <li><input type="checkbox" id="s6" name="sensory" value="צורך במגע חזק מאוד, חיבוקים מועצמים או התנגשות בחפצים"><label for="s6">צורך במגע חזק מאוד, חיבוקים 'מועצמים' או התנגשות בחפצים/אנשים</label></li>
+      <li><input type="checkbox" id="s7" name="sensory" value="נשיכת חפצים, ידיים או הכנסת בגדים לפה"><label for="s7">נשיכת חפצים, ידיים או הכנסת בגדים לפה</label></li>
+      <li><input type="checkbox" id="s8" name="sensory" value="חוסר מודעות לכאב, פציעות או לטמפרטורה"><label for="s8">חוסר מודעות לכאב, פציעות או לטמפרטורה (חום/קור)</label></li>
+      <li><input type="checkbox" id="s9" name="sensory" value="נפילות יזומות על הרצפה או קפיצה ממקומות גבוהים"><label for="s9">נטייה לנפילות יזומות על הרצפה או קפיצה ממקומות גבוהים</label></li>
+      <li><input type="checkbox" id="s10" name="sensory" value="נפילות, נתקע בחפצים, קלמזיות"><label for="s10">נטייה לנפילות, נתקע בחפצים, קלמזיות</label></li>
+      <li><input type="checkbox" id="s11" name="sensory" value="חוסר מודעות לרטיבות או לכלוך בגוף"><label for="s11">חוסר מודעות לרטיבות או לכלוך בגוף <strong>(קריטי לאבחון גמילה)</strong></label></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== חלק ז ===== -->
+<div class="section" id="partG">
+  <div class="section-header">
+    <div class="part-label">חלק ז</div>
+    <h2>השפעת ההרטבה על הילד</h2>
+    <div class="section-sub">PinQ — Pediatric Incontinence Questionnaire | Bower et al</div>
+  </div>
+  <div class="section-body">
+    <div class="info-box">מטרה: למדוד כיצד ההרטבה משפיעה על חיי הילד — חברתית, רגשית ומשפחתית. ענו לפי מה שאתם רואים בפועל.</div>
+    <p style="font-weight:700;margin-bottom:14px;color:var(--blue);">לכל משפט, סמנו עד כמה זה נכון לגבי ילדכם/ן:</p>
+
+    <style>
+    .pinq-card { background:#f7f9fc; border-radius:10px; padding:14px 16px; margin-bottom:12px; }
+    .pinq-card .pinq-q { font-weight:700; color:#1a4a6b; margin-bottom:12px; font-size:0.95rem; }
+    .pinq-options { display:flex; gap:6px; flex-wrap:wrap; }
+    .pinq-options input[type="radio"] { display:none; }
+    .pinq-options label {
+      flex:1; min-width:52px; text-align:center; padding:8px 4px;
+      border:1.5px solid #cdd7e0; border-radius:8px; cursor:pointer;
+      font-size:0.78rem; color:#555; background:white; transition:all 0.15s;
+      line-height:1.3;
+    }
+    .pinq-options input[type="radio"]:checked + label {
+      background:#1a4a6b; border-color:#1a4a6b; color:white; font-weight:700;
+    }
+    .pinq-options label:hover { border-color:#1a4a6b; color:#1a4a6b; }
+    </style>
+
+    <div class="pinq-card">
+      <div class="pinq-q">ילדי/ילדתי מרגיש/ה שונה מחברים בגלל ההרטבה</div>
+      <div class="pinq-options">
+        <input type="radio" name="pinq1" id="p1a" value="לא"><label for="p1a">לא</label>
+        <input type="radio" name="pinq1" id="p1b" value="כמעט לא"><label for="p1b">כמעט לא</label>
+        <input type="radio" name="pinq1" id="p1c" value="לפעמים"><label for="p1c">לפעמים</label>
+        <input type="radio" name="pinq1" id="p1d" value="לעיתים קרובות"><label for="p1d">לעיתים קרובות</label>
+        <input type="radio" name="pinq1" id="p1e" value="תמיד"><label for="p1e">תמיד</label>
+      </div>
+    </div>
+    <div class="pinq-card">
+      <div class="pinq-q">ילדי/ילדתי נמנע/ת מלינות חוץ או קייטנות בגלל ההרטבה</div>
+      <div class="pinq-options">
+        <input type="radio" name="pinq2" id="p2a" value="לא"><label for="p2a">לא</label>
+        <input type="radio" name="pinq2" id="p2b" value="כמעט לא"><label for="p2b">כמעט לא</label>
+        <input type="radio" name="pinq2" id="p2c" value="לפעמים"><label for="p2c">לפעמים</label>
+        <input type="radio" name="pinq2" id="p2d" value="לעיתים קרובות"><label for="p2d">לעיתים קרובות</label>
+        <input type="radio" name="pinq2" id="p2e" value="תמיד"><label for="p2e">תמיד</label>
+      </div>
+    </div>
+    <div class="pinq-card">
+      <div class="pinq-q">ילדי/ילדתי מרגיש/ה בושה בגלל ההרטבה</div>
+      <div class="pinq-options">
+        <input type="radio" name="pinq3" id="p3a" value="לא"><label for="p3a">לא</label>
+        <input type="radio" name="pinq3" id="p3b" value="כמעט לא"><label for="p3b">כמעט לא</label>
+        <input type="radio" name="pinq3" id="p3c" value="לפעמים"><label for="p3c">לפעמים</label>
+        <input type="radio" name="pinq3" id="p3d" value="לעיתים קרובות"><label for="p3d">לעיתים קרובות</label>
+        <input type="radio" name="pinq3" id="p3e" value="תמיד"><label for="p3e">תמיד</label>
+      </div>
+    </div>
+    <div class="pinq-card">
+      <div class="pinq-q">ההרטבה משפיעה על מצב הרוח של ילדי/ילדתי בבוקר</div>
+      <div class="pinq-options">
+        <input type="radio" name="pinq4" id="p4a" value="לא"><label for="p4a">לא</label>
+        <input type="radio" name="pinq4" id="p4b" value="כמעט לא"><label for="p4b">כמעט לא</label>
+        <input type="radio" name="pinq4" id="p4c" value="לפעמים"><label for="p4c">לפעמים</label>
+        <input type="radio" name="pinq4" id="p4d" value="לעיתים קרובות"><label for="p4d">לעיתים קרובות</label>
+        <input type="radio" name="pinq4" id="p4e" value="תמיד"><label for="p4e">תמיד</label>
+      </div>
+    </div>
+    <div class="pinq-card">
+      <div class="pinq-q">ילדי/ילדתי מסתיר/ה את הבעיה מחברים</div>
+      <div class="pinq-options">
+        <input type="radio" name="pinq5" id="p5a" value="לא"><label for="p5a">לא</label>
+        <input type="radio" name="pinq5" id="p5b" value="כמעט לא"><label for="p5b">כמעט לא</label>
+        <input type="radio" name="pinq5" id="p5c" value="לפעמים"><label for="p5c">לפעמים</label>
+        <input type="radio" name="pinq5" id="p5d" value="לעיתים קרובות"><label for="p5d">לעיתים קרובות</label>
+        <input type="radio" name="pinq5" id="p5e" value="תמיד"><label for="p5e">תמיד</label>
+      </div>
+    </div>
+    <div class="pinq-card">
+      <div class="pinq-q">ילדי/ילדתי מרגיש/ה שהוא/היא לא יכול/ה לשלוט בזה</div>
+      <div class="pinq-options">
+        <input type="radio" name="pinq6" id="p6a" value="לא"><label for="p6a">לא</label>
+        <input type="radio" name="pinq6" id="p6b" value="כמעט לא"><label for="p6b">כמעט לא</label>
+        <input type="radio" name="pinq6" id="p6c" value="לפעמים"><label for="p6c">לפעמים</label>
+        <input type="radio" name="pinq6" id="p6d" value="לעיתים קרובות"><label for="p6d">לעיתים קרובות</label>
+        <input type="radio" name="pinq6" id="p6e" value="תמיד"><label for="p6e">תמיד</label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== חלק ח ===== -->
+<div class="section" id="partH">
+  <div class="section-header">
+    <div class="part-label">חלק ח</div>
+    <h2>הנרטיב הרגשי של הילד</h2>
+    <div class="section-sub">פיתוח ייחודי | מבוסס על מחקר התקשרות וויסות רגשי</div>
+  </div>
+  <div class="section-body">
+    <div class="info-box">מטרה: להבין כיצד הילד תופס את הקושי שלו מבפנים. אין תשובות נכונות ושגויות.</div>
+    <div class="form-group"><label><span class="q-num">1</span>האם ילדך מדבר על ההרטבה מרצונו, מביא את הנושא לשיחה בעצמו?</label><textarea name="h1" rows="3" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">2</span>איך לדעתך הילד מסביר לעצמו למה זה קורה? מה הסיפור שהוא מספר לעצמו?</label><textarea name="h2" rows="3" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">3</span>האם שמת לב לשינוי בביטחון שלו/ה סביב אירועים חברתיים: לינות חוץ, קייטנה?</label><textarea name="h3" rows="3" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">4</span>האם לדעתך ילדך מרגיש שגופו בוגד בו/ה?</label><textarea name="h4" rows="3" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group">
+      <label><span class="q-num">5</span>עד כמה הילד מראה ביטחון עצמי בחיי היומיום? (1 = ביטחון נמוך מאוד, 5 = ביטחון גבוה)</label>
+      <div class="rating-wrapper">
+        <span class="rating-end-label">ביטחון גבוה</span>
+        <div class="rating-btns">
+          <div class="rating-btn"><input type="radio" name="h5" id="h5_5" value="5"><label for="h5_5">5</label></div>
+          <div class="rating-btn"><input type="radio" name="h5" id="h5_4" value="4"><label for="h5_4">4</label></div>
+          <div class="rating-btn"><input type="radio" name="h5" id="h5_3" value="3"><label for="h5_3">3</label></div>
+          <div class="rating-btn"><input type="radio" name="h5" id="h5_2" value="2"><label for="h5_2">2</label></div>
+          <div class="rating-btn"><input type="radio" name="h5" id="h5_1" value="1"><label for="h5_1">1</label></div>
+        </div>
+        <span class="rating-end-label">ביטחון נמוך</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== חלק ט ===== -->
+<div class="section" id="partI">
+  <div class="section-header">
+    <div class="part-label">חלק ט</div>
+    <h2>פרשנות ההורה</h2>
+    <div class="section-sub">פיתוח ייחודי | PSE (Parental Self-Efficacy) ו-Circle of Security</div>
+  </div>
+  <div class="section-body">
+    <div class="info-box">מטרה: להבין את הפרשנות שלכם להרטבה ואת ההשפעה שלה על הילד ועל הקשר ביניכם. שאלות אלו אינן שיפוטיות.</div>
+
+    <div class="form-group"><label><span class="q-num">1</span>לדעתך, מדוע ילדך מרטיב?</label><textarea name="i1" rows="3" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">2</span>מה אתה/את עושה כשזה קורה. מה התגובה הרגילה שלך?</label><textarea name="i2" rows="3" placeholder="תארו כאן..."></textarea></div>
+
+    <div class="form-group">
+      <label><span class="q-num">3</span>עד כמה אתה/את מאמין/ה שהילד שולט בזה? (1 = אין שליטה, 5 = שליטה מלאה)</label>
+      <div class="rating-wrapper"><span class="rating-end-label">שליטה מלאה</span><div class="rating-btns"><div class="rating-btn"><input type="radio" name="i3" id="i3_5" value="5"><label for="i3_5">5</label></div><div class="rating-btn"><input type="radio" name="i3" id="i3_4" value="4"><label for="i3_4">4</label></div><div class="rating-btn"><input type="radio" name="i3" id="i3_3" value="3"><label for="i3_3">3</label></div><div class="rating-btn"><input type="radio" name="i3" id="i3_2" value="2"><label for="i3_2">2</label></div><div class="rating-btn"><input type="radio" name="i3" id="i3_1" value="1"><label for="i3_1">1</label></div></div><span class="rating-end-label">אין שליטה</span></div>
+    </div>
+    <div class="form-group">
+      <label><span class="q-num">4</span>עד כמה ההרטבה משפיעה על הקשר ביניכם? (1 = כלל לא, 5 = מאוד)</label>
+      <div class="rating-wrapper"><span class="rating-end-label">מאוד</span><div class="rating-btns"><div class="rating-btn"><input type="radio" name="i4" id="i4_5" value="5"><label for="i4_5">5</label></div><div class="rating-btn"><input type="radio" name="i4" id="i4_4" value="4"><label for="i4_4">4</label></div><div class="rating-btn"><input type="radio" name="i4" id="i4_3" value="3"><label for="i4_3">3</label></div><div class="rating-btn"><input type="radio" name="i4" id="i4_2" value="2"><label for="i4_2">2</label></div><div class="rating-btn"><input type="radio" name="i4" id="i4_1" value="1"><label for="i4_1">1</label></div></div><span class="rating-end-label">כלל לא</span></div>
+    </div>
+    <div class="form-group">
+      <label><span class="q-num">5</span>עד כמה זה יוצר בושה או מתח אצל הילד? (1 = כלל לא, 5 = מאוד)</label>
+      <div class="rating-wrapper"><span class="rating-end-label">מאוד</span><div class="rating-btns"><div class="rating-btn"><input type="radio" name="i5" id="i5_5" value="5"><label for="i5_5">5</label></div><div class="rating-btn"><input type="radio" name="i5" id="i5_4" value="4"><label for="i5_4">4</label></div><div class="rating-btn"><input type="radio" name="i5" id="i5_3" value="3"><label for="i5_3">3</label></div><div class="rating-btn"><input type="radio" name="i5" id="i5_2" value="2"><label for="i5_2">2</label></div><div class="rating-btn"><input type="radio" name="i5" id="i5_1" value="1"><label for="i5_1">1</label></div></div><span class="rating-end-label">כלל לא</span></div>
+    </div>
+
+    <div class="form-group"><label><span class="q-num">6</span>מה הציפייה שלך: מתי לדעתך זה יפסיק?</label><textarea name="i6" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">7</span>האם לדעתך ילדך מרגיש שגופו בוגד בו/ה?</label><textarea name="i7" rows="3" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">8</span>האם ילדך מונע/ת מאירועים חברתיים בגלל ההרטבה? אם כן, מאיזה סוג?</label><textarea name="i8" rows="3" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">9</span>האם ניהלתם פעם שיחה על הנושא עם הילד? אם כן, מה אמרתם לו/ה?</label><textarea name="i9" rows="3" placeholder="תארו כאן..."></textarea></div>
+
+    <div class="subsection-title">תפיסת ההורה: מסוגלות והשפעה</div>
+    <div class="form-group">
+      <label><span class="q-num">10</span>עד כמה אתה/את מאמין/ה שיש לך השפעה על התהליך? (1 = כלל לא, 5 = מאוד)</label>
+      <div class="rating-wrapper"><span class="rating-end-label">מאוד</span><div class="rating-btns"><div class="rating-btn"><input type="radio" name="i10" id="i10_5" value="5"><label for="i10_5">5</label></div><div class="rating-btn"><input type="radio" name="i10" id="i10_4" value="4"><label for="i10_4">4</label></div><div class="rating-btn"><input type="radio" name="i10" id="i10_3" value="3"><label for="i10_3">3</label></div><div class="rating-btn"><input type="radio" name="i10" id="i10_2" value="2"><label for="i10_2">2</label></div><div class="rating-btn"><input type="radio" name="i10" id="i10_1" value="1"><label for="i10_1">1</label></div></div><span class="rating-end-label">כלל לא</span></div>
+    </div>
+
+    <div class="subsection-title">יכולת התבוננות עצמית</div>
+    <div class="form-group"><label><span class="q-num">11</span>מה קורה בגוף שלך ברגע שאתה/את מגלה סדין רטוב או פספוס?</label><textarea name="i11" rows="3" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group">
+      <label><span class="q-num">12</span>עד כמה אתה/את מצליח/ה לנוח מהצורך לפתור ולהתבונן בילד מבלי להגיב מיד? (1 = קשה מאוד, 5 = בקלות)</label>
+      <div class="rating-wrapper"><span class="rating-end-label">מצליח/ה בקלות</span><div class="rating-btns"><div class="rating-btn"><input type="radio" name="i12" id="i12_5" value="5"><label for="i12_5">5</label></div><div class="rating-btn"><input type="radio" name="i12" id="i12_4" value="4"><label for="i12_4">4</label></div><div class="rating-btn"><input type="radio" name="i12" id="i12_3" value="3"><label for="i12_3">3</label></div><div class="rating-btn"><input type="radio" name="i12" id="i12_2" value="2"><label for="i12_2">2</label></div><div class="rating-btn"><input type="radio" name="i12" id="i12_1" value="1"><label for="i12_1">1</label></div></div><span class="rating-end-label">קשה מאוד</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Submit -->
+<div class="submit-area">
+  <button type="submit" class="btn-submit">📨 שליחת השאלון</button>
+  <p class="submit-note">
+    התשובות ישמרו בצורה מאובטחת.<br>
+    לאחר השליחה, שלחו את הסרטונים לנועה ב-WhatsApp.
+  </p>
+</div>
+
+</form>
+</div><!-- end wrapper -->
+
+<div class="footer">
+  נועה שביט ויעל שוורץ | שאלון הורה משולב | גרסה 2.0<br>
+  בפגישה הבאה נשתף אתכם בהבנה ההתפתחותית של מה שהילד שלכם חווה.
+</div>
+
+<!-- Success overlay -->
+<div id="success-overlay">
+  <div class="success-card">
+    <div class="icon">✅</div>
+    <h2>תודה על מילוי השאלון!</h2>
+    <p>תשובותיכם התקבלו ויסייעו לנו להכין את המפגש הראשון בצורה הטובה ביותר.</p>
+    <ol class="success-steps">
+      <li>✅ התשובות התקבלו בהצלחה</li>
+      <li>🎥 שלחו את הסרטונים לנועה ב-WhatsApp</li>
+    </ol>
+    <button class="btn-close-success" onclick="document.getElementById('success-overlay').classList.remove('show')">סגור</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const EMAIL_TO = 'linden.family.london@gmail.com';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby08-gaIOeaFWh_rej2hbptafG2UqXJ9xCPYmiBgGbO3E0vwDK_pQwkf24v-oFSV9ZJ/exec';
+
+// ===== Setup panel =====
+function toggleSetup() {
+  const btn = document.getElementById('setupToggle');
+  const body = document.getElementById('setupBody');
+  btn.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+function saveAppsScriptUrl() {
+  const url = document.getElementById('appsScriptUrl').value.trim();
+  const status = document.getElementById('urlStatus');
+  if (!url || !url.includes('script.google.com')) {
+    status.className = 'url-status missing';
+    status.textContent = '⚠️ נא להדביק URL תקין של Google Apps Script';
+    return;
+  }
+  localStorage.setItem('appsScriptUrl', url);
+  status.className = 'url-status ok';
+  status.textContent = '✅ ה-URL נשמר!';
+  showToast('URL נשמר בהצלחה');
+}
+
+// Load saved URL
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('appsScriptUrl');
+  if (saved) {
+    document.getElementById('appsScriptUrl').value = saved;
+    document.getElementById('urlStatus').className = 'url-status ok';
+    document.getElementById('urlStatus').textContent = '✅ URL שמור';
+  }
+
+  // Add labels row to each rating wrapper
+  document.querySelectorAll('.rating-wrapper').forEach(wrapper => {
+    const rightLabel = wrapper.querySelector('.rating-end-label:first-child') ||
+                       wrapper.querySelector('.rating-end-label');
+    const labels = wrapper.querySelectorAll('.rating-end-label');
+    if (labels.length >= 2) {
+      const row = document.createElement('div');
+      row.className = 'rating-labels-row';
+      row.innerHTML = `<span>${labels[1].textContent}</span><span>${labels[0].textContent}</span>`;
+      wrapper.insertBefore(row, wrapper.firstChild);
+    }
+  });
+
+  updateProgress();
+});
+
+// ===== Video handling =====
+function handleVideo(input, previewId, fnameId, wrapId) {
+  const file = input.files[0];
+  if (!file) return;
+  const wrap = document.getElementById(wrapId);
+  const preview = document.getElementById(previewId);
+  const fname = document.getElementById(fnameId);
+  wrap.style.display = 'block';
+  preview.src = URL.createObjectURL(file);
+  fname.textContent = '📎 ' + file.name + ' (' + (file.size / 1024 / 1024).toFixed(1) + ' MB)';
+}
+
+// ===== Progress bar =====
+function updateProgress() {
+  const form = document.getElementById('mainForm');
+  const inputs = form.querySelectorAll('input[type="text"], input[type="tel"], textarea');
+  const radioGroups = {};
+  form.querySelectorAll('input[type="radio"]').forEach(r => {
+    radioGroups[r.name] = radioGroups[r.name] || false;
+    if (r.checked) radioGroups[r.name] = true;
+  });
+  const selects = form.querySelectorAll('select');
+  let filled = 0, total = 0;
+  inputs.forEach(el => { total++; if (el.value.trim()) filled++; });
+  Object.values(radioGroups).forEach(v => { total++; if (v) filled++; });
+  selects.forEach(el => { total++; if (el.value) filled++; });
+  const pct = total > 0 ? Math.round((filled / total) * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = 'השלמת הטופס: ' + pct + '%';
+}
+document.getElementById('mainForm').addEventListener('input', updateProgress);
+document.getElementById('mainForm').addEventListener('change', updateProgress);
+
+// ===== Collect data =====
+function collectData() {
+  const form = document.getElementById('mainForm');
+  const d = {};
+  form.querySelectorAll('input[type="text"], input[type="tel"], textarea').forEach(el => {
+    if (el.name) d[el.name] = el.value.trim();
+  });
+  form.querySelectorAll('select').forEach(el => {
+    if (el.name) d[el.name] = el.value;
+  });
+  const rg = {};
+  form.querySelectorAll('input[type="radio"]').forEach(r => {
+    rg[r.name] = rg[r.name] || '';
+    if (r.checked) rg[r.name] = r.value;
+  });
+  Object.assign(d, rg);
+  const cbg = {};
+  form.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cbg[cb.name] = cbg[cb.name] || [];
+    if (cb.checked) cbg[cb.name].push(cb.value);
+  });
+  Object.keys(cbg).forEach(k => { d[k] = cbg[k].join(', ') || '—'; });
+
+  // Video filenames
+  ['c','d','e'].forEach(p => {
+    const input = document.getElementById('video_' + p);
+    d['video_' + p + '_filename'] = input && input.files[0] ? input.files[0].name : '—';
+  });
+
+  d['תאריך_מילוי'] = new Date().toLocaleDateString('he-IL');
+  return d;
+}
+
+// ===== Build email body =====
+function buildEmail(d) {
+  const child = d.child_name || '(לא צוין)';
+  return `שאלון הורה משולב — ${child} | ${d['תאריך_מילוי']}
+================================================
+
+חלק א — פרטי זיהוי
+שם האם: ${d.mother_name||'—'} | עיסוק: ${d.mother_job||'—'} | טלפון: ${d.mother_phone||'—'} | ת.לידה: ${d.mother_dob||'—'}
+שם האב: ${d.father_name||'—'} | עיסוק: ${d.father_job||'—'} | טלפון: ${d.father_phone||'—'} | ת.לידה: ${d.father_dob||'—'}
+שם הילד/ה: ${d.child_name||'—'} | ת.לידה: ${d.child_dob||'—'} | כיתה/מוסד: ${d.child_school||'—'}
+אחים: ${d.child_siblings||'—'}
+רקע תורשתי: ${d.family_history||'—'}
+
+היסטוריה התפתחותית ורפואית
+שבוע לידה: ${d.birth_week||'—'} | צהבת ילודים: ${d.jaundice||'—'} | הנקה: ${d.breastfeeding||'—'}
+חיסונים: ${d.vaccines||'—'} | תגובה לחיסונים: ${d.vaccine_reaction||'—'}
+שלבי התפתחות: ${d.dev_stages||'—'} | גיל הליכה: ${d.walking_age||'—'}
+אבחונים: ${d.diagnoses||'—'} | טראומה: ${d.trauma||'—'} | בהלה בקלות: ${d.startle_response||'—'}
+
+חלק ב — היסטוריית גמילה
+1. ${d.b1||'—'} | 2. ${d.b2||'—'} | 3. ${d.b3||'—'} | 4. ${d.b4||'—'}
+5. ${d.b5||'—'} | 6. ${d.b6||'—'} | 7. ${d.b7||'—'}
+
+חלק ג — מבדק מודעות גוף
+סרטון: ${d.video_c_filename||'—'} | קישור Drive: ${d.video_c_link||'—'}
+איברים: ${d.body_parts||'—'} | הערות: ${d.c_notes||'—'}
+
+חלק ד — מבדק תנועה
+סרטון: ${d.video_d_filename||'—'} | קישור Drive: ${d.video_d_link||'—'}
+קדימה/אחורה: ${d.d_forward||'—'} | צידית: ${d.d_sideways||'—'}
+
+חלק ה — רפלקסים
+סרטון: ${d.video_e_filename||'—'} | קישור Drive: ${d.video_e_link||'—'}
+Galant: דירוג ${d.galant_score||'—'} | ${d.galant_notes||'—'}
+Perez: דירוג ${d.perez_score||'—'} | ${d.perez_notes||'—'}
+
+חלק ו: פרופיל חושי
+${d.sensory||'—'}
+
+חלק ז — PinQ
+שונה מחברים: ${d.pinq1||'—'} | נמנע מלינות: ${d.pinq2||'—'} | בושה: ${d.pinq3||'—'}
+מצב רוח בבוקר: ${d.pinq4||'—'} | מסתיר מחברים: ${d.pinq5||'—'} | חסר שליטה: ${d.pinq6||'—'}
+
+חלק ח — נרטיב רגשי
+1. ${d.h1||'—'} | 2. ${d.h2||'—'} | 3. ${d.h3||'—'} | 4. ${d.h4||'—'} | ביטחון עצמי: ${d.h5||'—'}/5
+
+חלק ט: פרשנות ההורה
+1. ${d.i1||'—'} | 2. ${d.i2||'—'} | שליטת ילד: ${d.i3||'—'}/5
+השפעה על קשר: ${d.i4||'—'}/5 | בושה/מתח: ${d.i5||'—'}/5
+6. ${d.i6||'—'} | 7. ${d.i7||'—'} | 8. ${d.i8||'—'} | 9. ${d.i9||'—'}
+השפעת הורה: ${d.i10||'—'}/5 | 11. ${d.i11||'—'} | התבוננות: ${d.i12||'—'}/5
+
+================================================
+נועה שביט ויעל שוורץ | שאלון הורה משולב | גרסה 2.0`;
+}
+
+// ===== Toast =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ===== Submit =====
+async function submitForm(e) {
+  e.preventDefault();
+  const d = collectData();
+  const child = d.child_name || 'ילד';
+
+  // 1. Try Google Sheets
+  const appsUrl = APPS_SCRIPT_URL || localStorage.getItem('appsScriptUrl');
+  if (appsUrl) {
+    try {
+      showToast('שולח נתונים ל-Google Sheets...');
+      await fetch(appsUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(d)
+      });
+      showToast('✅ נשמר ב-Google Sheets');
+    } catch(err) {
+      showToast('⚠️ לא ניתן לשמור ב-Sheets — ישלח רק למייל');
+    }
+  }
+
+
+  // 3. Show success
+  setTimeout(() => {
+    document.getElementById('success-overlay').classList.add('show');
+  }, 1200);
+}
+</script>
+</body>
+</html>
