@@ -476,7 +476,6 @@ function doPost(e) {
   <h3>מה כולל השאלון?</h3>
   <ul>
     <li><a href="#partA">חלק א: פרטי זיהוי ורקע משפחתי</a></li>
-    <li><a href="#partB">חלק ב: היסטוריית גמילה ותפקוד נוכחי</a></li>
     <li><a href="#partF">חלק ו: פרופיל חושי</a></li>
     </ul>
 </div>
@@ -618,6 +617,11 @@ function doPost(e) {
     <div class="form-group">
       <label><span class="q-num">14</span>מתי התחיל ללכת?</label>
       <input type="text" name="walking_age" placeholder="לדוגמה: גיל שנה וחצי">
+    </div>
+
+    <div class="form-group">
+      <label><span class="q-num">15</span>האם גמול באופן מלא? אם כן, כמה זמן לקח תהליך הגמילה? אם לא, אנא פרט: האם יש פספוסים במהלך היום? במהלך הלילה? במידה ומפספס — האם מודע לכך שפספס? האם קיימת נטייה לעצירות כרונית?</label>
+      <textarea name="a15_weaning" rows="5" placeholder="תארו כאן..."></textarea>
     </div>
 
     <div class="subsection-title">אבחונים וטראומה</div>
@@ -824,29 +828,7 @@ function doPost(e) {
   </div>
 </div>
 
-<!-- ===== חלק ב ===== -->
-<div class="section" id="partB">
-  <div class="section-header">
-    <div class="part-label">חלק ב</div>
-    <h2>היסטוריית גמילה ותפקוד נוכחי</h2>
-    <div class="section-sub">אבחון קליני</div>
-  </div>
-  <div class="section-body">
-    <div class="info-box">מטרה: לזהות דפוסים חוזרים, נסיגות ורמת מודעות הילד לגופו. ענו בחופשיות ובכנות. אין תשובות נכונות או שגויות.</div>
-    <p style="font-weight:700;margin-bottom:16px;color:var(--blue);">נא לתאר את התהליך הכרונולוגי והדפוסים הנוכחיים:</p>
 
-    <div class="form-group"><label><span class="q-num">1</span>היסטוריית גמילה: מתי התחיל התהליך? האם היו הפסקות ממושכות או נסיגות משמעותיות?</label><textarea name="b1" rows="3" placeholder="תארו כאן..."></textarea></div>
-    <div class="form-group"><label><span class="q-num">2</span>אפיון פספוסים: תדירות וזמנים ביום. האם קיימת מודעות לרטיבות? האם הילד מדווח או מפגין אדישות?</label><textarea name="b2" rows="3" placeholder="תארו כאן..."></textarea></div>
-    <div class="form-group"><label><span class="q-num">3</span>הרטבת לילה: עומק השינה, תגובת הילד להתעוררות ברטיבות (בושה, אדישות, צחוק)?</label><textarea name="b3" rows="3" placeholder="תארו כאן..."></textarea></div>
-    <div class="form-group"><label><span class="q-num">4</span>האם קיימת נטייה לעצירות כרונית?</label><textarea name="b4" rows="2" placeholder="תארו כאן..."></textarea></div>
-
-    <div class="subsection-title">דפוסי תגובה רגשית</div>
-    <div class="info-box">ילדים לעיתים שולחים 'רמזים מוטעים' כגון צחוק או אדישות כהגנה מפני בושה. זיהוי דפוסים אלו חיוני להבנת הילד.</div>
-    <div class="form-group"><label><span class="q-num">5</span>האם הילד משדר רמזים מוטעים (צחוק מעושה, 'לא אכפת לי') לאחר פספוס?</label><textarea name="b5" rows="3" placeholder="תארו כאן..."></textarea></div>
-    <div class="form-group"><label><span class="q-num">6</span>האם הילד נמנע משימוש בשירותים במקומות זרים?</label><textarea name="b6" rows="2" placeholder="תארו כאן..."></textarea></div>
-    <div class="form-group"><label><span class="q-num">7</span>מה התחושה שעולה בכם בגילוי של סדין רטוב או פספוס?</label><textarea name="b7" rows="3" placeholder="תארו כאן..."></textarea></div>
-  </div>
-</div>
 
 
 
