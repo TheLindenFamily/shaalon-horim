@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>שאלון להורים</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --blue: #1a4a6b; --blue-light: #e8f4fd; --orange: #f5a623; --orange-light: #fff3e0;
+  --green: #27ae60; --red: #c0392b; --gray: #f4f6f9; --border: #cdd7e0; --text: #222; --sub: #555;
+}
+body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--gray); color: var(--text); direction: rtl; text-align: right; font-size: 16px; }
+.progress-bar-wrap { position: sticky; top: 0; z-index: 200; background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+.progress-track { height: 5px; background: #e0e0e0; }
+.progress-fill { height: 100%; background: var(--orange); transition: width 0.4s; width: 0%; }
+.progress-label { text-align: center; font-size: 0.75rem; color: #888; padding: 4px 0 5px; }
+.page-header { background: var(--blue); color: white; text-align: center; padding: 36px 16px 28px; }
+.page-header h1 { font-size: clamp(1.5rem, 5vw, 2.2rem); margin-bottom: 8px; }
+.page-header .subtitle { color: #7ec8e3; font-size: clamp(0.9rem, 3vw, 1.1rem); margin-bottom: 6px; }
+.page-header .authors { font-size: 0.9rem; opacity: 0.8; }
+.wrapper { max-width: 800px; margin: 0 auto; padding: 0 12px; }
+.intro-box { background: #fff8e1; border-right: 5px solid var(--orange); border-radius: 8px; padding: 16px 18px; margin: 20px 0; font-size: 0.95rem; line-height: 1.7; }
+.toc { background: white; border-radius: 10px; padding: 18px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin-bottom: 24px; }
+.toc h3 { color: var(--blue); margin-bottom: 10px; font-size: 1rem; }
+.toc ul { list-style: none; }
+.toc li { padding: 4px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.9rem; }
+.toc li:last-child { border-bottom: none; }
+.toc a { color: var(--blue); text-decoration: none; }
+.section { background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin-bottom: 24px; overflow: hidden; }
+.section-header { background: var(--blue); color: white; padding: 14px 20px; }
+.section-header .part-label { font-size: 0.8rem; opacity: 0.75; }
+.section-header h2 { font-size: clamp(1.1rem, 4vw, 1.4rem); margin: 2px 0; }
+.section-header .section-sub { font-size: 0.85rem; color: #7ec8e3; margin-top: 2px; }
+.section-body { padding: 20px; }
+.info-box { background: var(--blue-light); border-right: 4px solid var(--blue); border-radius: 6px; padding: 12px 14px; margin-bottom: 18px; font-size: 0.88rem; line-height: 1.65; font-style: italic; color: #333; }
+.form-group { margin-bottom: 20px; }
+.form-group > label { display: flex; align-items: flex-start; gap: 8px; font-weight: 600; margin-bottom: 8px; color: var(--blue); font-size: 0.95rem; line-height: 1.5; }
+.q-num { background: var(--blue); color: white; border-radius: 50%; min-width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+textarea, input[type="text"] { width: 100%; border: 1.5px solid var(--border); border-radius: 6px; padding: 10px 12px; font-family: inherit; font-size: 0.95rem; direction: rtl; background: #fafcfe; transition: border 0.2s; -webkit-appearance: none; }
+textarea { resize: vertical; min-height: 70px; }
+textarea:focus, input[type="text"]:focus { outline: none; border-color: var(--blue); background: white; }
+.subsection-title { font-weight: 700; color: var(--blue); font-size: 1.05rem; margin: 22px 0 12px; border-bottom: 2px solid #e8ecf0; padding-bottom: 6px; }
+.subsection-title:first-of-type { margin-top: 4px; }
+.freq-card { background: #f7f9fc; border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; }
+.freq-card .freq-q { font-weight: 700; color: var(--blue); margin-bottom: 10px; font-size: 0.95rem; line-height: 1.5; }
+.freq-options { display: flex; gap: 6px; flex-wrap: wrap; }
+.freq-options input[type="radio"] { display: none; }
+.freq-options label { flex: 1; min-width: 66px; text-align: center; padding: 8px 4px; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.76rem; color: var(--sub); background: white; transition: all 0.15s; line-height: 1.3; }
+.freq-options input[type="radio"]:checked + label { background: var(--blue); border-color: var(--blue); color: white; font-weight: 700; }
+.freq-options label:hover { border-color: var(--blue); color: var(--blue); }
+.scale-legend { display: flex; flex-wrap: wrap; gap: 10px; background: white; border-radius: 10px; padding: 14px 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin-bottom: 24px; font-size: 0.85rem; }
+.scale-legend .item { display: flex; align-items: center; gap: 6px; }
+.scale-legend .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--blue); display: inline-block; }
+.submit-area { text-align: center; margin-bottom: 40px; padding: 24px 12px; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+.btn-submit { background: var(--blue); color: white; border: none; padding: 16px 48px; font-size: 1.05rem; font-weight: 700; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 14px rgba(26,74,107,0.3); width: 100%; max-width: 340px; }
+.btn-submit:hover { background: #14375a; }
+.submit-note { margin-top: 12px; font-size: 0.82rem; color: #666; line-height: 1.6; }
+.footer { text-align: center; padding: 20px; font-size: 0.82rem; color: #888; border-top: 1px solid #e0e0e0; }
+#success-overlay { display: none; position: fixed; inset: 0; background: rgba(26,74,107,0.92); z-index: 9999; align-items: center; justify-content: center; padding: 16px; }
+#success-overlay.show { display: flex; }
+.success-card { background: white; border-radius: 16px; padding: 32px 24px; max-width: 420px; width: 100%; text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,0.3); }
+.success-card .icon { font-size: 2.5rem; margin-bottom: 12px; }
+.success-card h2 { color: var(--blue); margin-bottom: 10px; font-size: 1.3rem; }
+.success-card p { color: #555; font-size: 0.9rem; line-height: 1.65; margin-bottom: 16px; }
+.btn-close-success { background: var(--blue); color: white; border: none; padding: 10px 32px; border-radius: 20px; cursor: pointer; font-size: 0.95rem; font-weight: 600; width: 100%; }
+#toast { position: fixed; bottom: 24px; right: 50%; transform: translateX(50%); background: #333; color: white; border-radius: 8px; padding: 12px 20px; font-size: 0.9rem; z-index: 9998; opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 90%; }
+#toast.show { opacity: 1; }
+@media (max-width: 600px) { .section-body { padding: 14px; } }
+
+.hint { font-weight: 400; font-size: 0.8rem; color: #7a8a99; }
+.sub-blurb { font-size: 0.85rem; color: var(--sub); margin: -4px 0 12px; line-height: 1.6; }
+.subsection-title.big { font-size: 1.15rem; margin-top: 30px; }
+.owner { font-size: 0.78rem; margin-top: 6px; display: inline-block; background: rgba(255,255,255,0.15); padding: 2px 10px; border-radius: 12px; }
+.toc-group { font-weight: 700; color: var(--sub); font-size: 0.8rem !important; padding-top: 10px !important; border-bottom: none !important; }
+.choice-options { display: flex; gap: 6px; flex-wrap: wrap; }
+.choice-options input { display: none; }
+.choice-options label { flex: 1 1 120px; text-align: center; padding: 9px 8px; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.82rem; color: var(--sub); background: white; line-height: 1.35; transition: all 0.15s; }
+.choice-options input:checked + label { background: var(--blue); border-color: var(--blue); color: white; font-weight: 700; }
+.choice-options label:hover { border-color: var(--blue); color: var(--blue); }
+.choice-options.multi label { flex: 1 1 100%; text-align: right; }
+input.detail { margin-top: 10px; background: white; }
+.freq-q .q-num { margin-left: 8px; vertical-align: middle; }
+.freq-options label { min-width: 70px; }
+.moment-card { background: #fffaf0; border: 1px solid #f3e2bd; border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
+.moment-title { font-weight: 700; color: var(--blue); margin-bottom: 10px; font-size: 0.95rem; }
+.moment-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+.moment-field span { font-size: 0.82rem; color: var(--sub); font-weight: 600; }
+.moment-field input { background: white; }
+.save-note { text-align: center; font-size: 0.78rem; color: #888; margin: -12px 0 20px; }
+
+</style>
+</head>
+<body>
+<div class="progress-bar-wrap">
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">השלמת הטופס: 0%</div>
+</div>
+<div class="page-header">
+  <h1>להכיר את הילד שלכם</h1>
+  <div class="subtitle">שאלון להורים</div>
+  <div class="authors">יעל שוורץ ונועה שביט</div>
+</div>
+<div class="wrapper">
+<div class="intro-box" style="margin-top:20px;">
+  <strong>הורים יקרים, שלום רב!</strong><br>
+  השאלון הזה עוזר לנו להכיר את הילד שלכם מקרוב, דרך העיניים שלכם. אין בו תשובות נכונות או לא נכונות, והוא לא בודק אתכם. את מה שכבר סיפרתם לנו לא נשאל שוב.<br>
+  אפשר לדלג על כל שאלה, לכתוב רק כמה מילים, ולמלא בכמה פעמים. תודה על הזמן ועל האמון.
+</div>
+<div class="scale-legend">
+  <strong style="width:100%;color:var(--blue);margin-bottom:2px;">סולם הדירוג:</strong>
+  <div class="item"><span class="dot"></span>אף פעם</div>
+  <div class="item"><span class="dot"></span>לעיתים רחוקות</div>
+  <div class="item"><span class="dot"></span>לעיתים קרובות</div>
+  <div class="item"><span class="dot"></span>תמיד</div>
+</div>
+<div class="toc">
+  <h3>מה כולל השאלון?</h3>
+  <ul>
+    <li><a href="#whole">חלק א: להכיר את הילד שלכם</a></li>
+    <li><a href="#noa-med">חלק ב: השלמות רפואיות</a></li>
+    <li><a href="#noa-reg">חלק ג: ויסות, רפלקסים ותפקוד יומיומי</a></li>
+    <li><a href="#noa-sensory">חלק ד: פרופיל חושי</a></li>
+    <li><a href="#calm">חלק ה: רגיעה</a></li>
+    <li><a href="#connect">חלק ו: קשר ותקשורת</a></li>
+    <li><a href="#play">חלק ז: משחק ורגשות</a></li>
+    <li><a href="#social">חלק ח: חברים</a></li>
+    <li><a href="#trans">חלק ט: מעברים ושינויים</a></li>
+  </ul>
+</div>
+<div class="save-note">התשובות נשמרות במכשיר הזה תוך כדי מילוי, כך שאפשר לעצור ולהמשיך אחר כך.</div>
+<form id="mainForm" onsubmit="submitForm(event)">
+
+<div class="section" id="whole">
+  <div class="section-header">
+    <div class="part-label">חלק א</div>
+    <h2>להכיר את הילד שלכם</h2>
+    <div class="section-sub">מה חשוב לו, ובמה הוא טוב</div><div class="owner">יעל שוורץ</div>
+  </div>
+  <div class="section-body">
+    <div class="info-box">נתחיל ממה שאתם אוהבים בו ומה שהוא אוהב. מהתשובות נבנה יחד איתכם עמוד אחד עליו, שתוכלו לתת לכל צוות או איש מקצוע שפוגשים אותו לראשונה.</div>
+    <div class="form-group"><label>מה אתם הכי אוהבים בילד שלכם?</label><textarea name="o1" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>איך הייתם מתארים אותו בשלוש-ארבע מילים?</label><textarea name="o2" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>מה מרתק אותו היום? (אוספים, שירה, ריקוד, או כל דבר אחר שהוא אוהב)</label><textarea name="o3" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>ספרו על רגע אחרון שבו ראיתם אותו גאה בעצמו.</label><textarea name="o4" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>אילו חפצים, הרגלים או טקסים יומיים חשובים לו במיוחד?</label><textarea name="o5" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>מה הייתם רוצים שמורה חדשה תדע עליו כבר ביום הראשון?</label><textarea name="o6" rows="2" placeholder="תארו כאן..."></textarea></div>
+  </div>
+</div>
+
+<div class="section" id="noa-med">
+  <div class="section-header">
+    <div class="part-label">חלק ב</div>
+    <h2>השלמות רפואיות</h2>
+    <div class="section-sub">רק מה שעוד לא שמענו</div><div class="owner">נועה שביט</div>
+  </div>
+  <div class="section-body">
+    <div class="info-box">את רוב הרקע ההתפתחותי והרפואי כבר סיפרתם לנו, ולכן כאן יש רק השלמות. אם פרט אינו רלוונטי, השאירו ריק.</div>
+    <div class="form-group"><label><span class="q-num">1</span>ראייה: מה המצב היום? (משקפיים, מעקב, תוצאות אחרונות)</label><textarea name="vision_detail" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">2</span>ניתוחים: אם עבר ניתוחים, ספרו בקצרה באיזה גיל ומה נעשה.</label><textarea name="surgeries" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">3</span>שמיעה: האם נעשתה בדיקת שמיעה בשנים האחרונות? מה היו התוצאות?</label><textarea name="hearing_detail" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="freq-card"><div class="freq-q"><span class="q-num">4</span>האם נאמר לכם פעם שיש לו גמישות יתר, חולשה או טונוס נמוך? <span class="hint">(אפשר לסמן יותר מאחד)</span></div><div class="choice-options multi"><input type="checkbox" name="muscle_issue" id="muscle_issue_0" value="גמישות יתר"><label for="muscle_issue_0">גמישות יתר</label><input type="checkbox" name="muscle_issue" id="muscle_issue_1" value="חולשה או טונוס נמוך"><label for="muscle_issue_1">חולשה או טונוס נמוך</label><input type="checkbox" name="muscle_issue" id="muscle_issue_2" value="נוקשות שרירים"><label for="muscle_issue_2">נוקשות שרירים</label><input type="checkbox" name="muscle_issue" id="muscle_issue_3" value="לא נאמר לנו"><label for="muscle_issue_3">לא נאמר לנו</label></div><input type="text" class="detail" name="muscle_issue_detail" placeholder="באילו אזורים? (אם ידוע)"></div>
+    <div class="freq-card"><div class="freq-q"><span class="q-num">5</span>האם יש פעולות גופניות שרופא ביקש להימנע מהן?</div><div class="choice-options"><input type="radio" name="restricted_movements" id="restricted_movements_0" value="כן"><label for="restricted_movements_0">כן</label><input type="radio" name="restricted_movements" id="restricted_movements_1" value="לא"><label for="restricted_movements_1">לא</label></div><input type="text" class="detail" name="restricted_movements_detail" placeholder="אילו?"></div>
+    <div class="form-group"><label><span class="q-num">6</span>בעיות נשימה:</label><textarea name="breathing_issues" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">7</span>בעיות לב ודם:</label><textarea name="heart_issues" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">8</span>שבר או בעיות יציבה:</label><textarea name="posture_issues" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">9</span>האם אושפז? אם כן, מתי ומדוע?</label><textarea name="hospitalization" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">10</span>האם לוקח תרופות? אם כן, פרטו:</label><textarea name="medications" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">11</span>האם היו בחייו אירועים מפחידים או קשים במיוחד (למשל אשפוז, אובדן, אזעקות)? רק אם מתאים לכם לשתף.</label><textarea name="trauma" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">12</span>איך הוא מגיב לרעש פתאומי או להפתעה?</label><textarea name="startle_response" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">13</span>האם יש פרט רפואי נוסף שלדעתכם חשוב ולא הוזכר?</label><textarea name="other_medical" rows="2" placeholder="תארו כאן..."></textarea></div>
+  </div>
+</div>
+
+<div class="section" id="noa-reg">
+  <div class="section-header">
+    <div class="part-label">חלק ג</div>
+    <h2>ויסות, רפלקסים ותפקוד יומיומי</h2>
+    <div class="section-sub">זיהוי סימפטומים</div><div class="owner">נועה שביט</div>
+  </div>
+  <div class="section-body">
+    <div class="info-box">אנא ענו על ההיגדים הבאים על פי רמת התדירות שאתם פוגשים ביומיום.</div>
+    <div class="subsection-title">ויסות חושי ומודעות גוף</div>
+    <div class="freq-card"><div class="freq-q">רגישות למגע (תפרים בגרביים, תוויות, רתיעה מחיבוק)</div><div class="freq-options"><input type="radio" name="f1" id="f1_0" value="אף פעם"><label for="f1_0">אף פעם</label><input type="radio" name="f1" id="f1_1" value="לעיתים רחוקות"><label for="f1_1">לעיתים רחוקות</label><input type="radio" name="f1" id="f1_2" value="לעיתים קרובות"><label for="f1_2">לעיתים קרובות</label><input type="radio" name="f1" id="f1_3" value="תמיד"><label for="f1_3">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">רגישות לרעשים פתאומיים או לרעשי רקע (מזגן, לעיסות)</div><div class="freq-options"><input type="radio" name="f2" id="f2_0" value="אף פעם"><label for="f2_0">אף פעם</label><input type="radio" name="f2" id="f2_1" value="לעיתים רחוקות"><label for="f2_1">לעיתים רחוקות</label><input type="radio" name="f2" id="f2_2" value="לעיתים קרובות"><label for="f2_2">לעיתים קרובות</label><input type="radio" name="f2" id="f2_3" value="תמיד"><label for="f2_3">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">קושי להתמקד בסביבה עמוסה בגירויים</div><div class="freq-options"><input type="radio" name="f3" id="f3_0" value="אף פעם"><label for="f3_0">אף פעם</label><input type="radio" name="f3" id="f3_1" value="לעיתים רחוקות"><label for="f3_1">לעיתים רחוקות</label><input type="radio" name="f3" id="f3_2" value="לעיתים קרובות"><label for="f3_2">לעיתים קרובות</label><input type="radio" name="f3" id="f3_3" value="תמיד"><label for="f3_3">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">נטייה להיתקל בחפצים או ליפול</div><div class="freq-options"><input type="radio" name="f4" id="f4_0" value="אף פעם"><label for="f4_0">אף פעם</label><input type="radio" name="f4" id="f4_1" value="לעיתים רחוקות"><label for="f4_1">לעיתים רחוקות</label><input type="radio" name="f4" id="f4_2" value="לעיתים קרובות"><label for="f4_2">לעיתים קרובות</label><input type="radio" name="f4" id="f4_3" value="תמיד"><label for="f4_3">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">צורך במגע חזק, חיבוק מוחץ או ׳התרסקות׳ על הספה</div><div class="freq-options"><input type="radio" name="f5" id="f5_0" value="אף פעם"><label for="f5_0">אף פעם</label><input type="radio" name="f5" id="f5_1" value="לעיתים רחוקות"><label for="f5_1">לעיתים רחוקות</label><input type="radio" name="f5" id="f5_2" value="לעיתים קרובות"><label for="f5_2">לעיתים קרובות</label><input type="radio" name="f5" id="f5_3" value="תמיד"><label for="f5_3">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">עומד קרוב מאוד לאחרים</div><div class="freq-options"><input type="radio" name="f6" id="f6_0" value="אף פעם"><label for="f6_0">אף פעם</label><input type="radio" name="f6" id="f6_1" value="לעיתים רחוקות"><label for="f6_1">לעיתים רחוקות</label><input type="radio" name="f6" id="f6_2" value="לעיתים קרובות"><label for="f6_2">לעיתים קרובות</label><input type="radio" name="f6" id="f6_3" value="תמיד"><label for="f6_3">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">בוכה כאשר מקבל מכה</div><div class="freq-options"><input type="radio" name="f7" id="f7_0" value="אף פעם"><label for="f7_0">אף פעם</label><input type="radio" name="f7" id="f7_1" value="לעיתים רחוקות"><label for="f7_1">לעיתים רחוקות</label><input type="radio" name="f7" id="f7_2" value="לעיתים קרובות"><label for="f7_2">לעיתים קרובות</label><input type="radio" name="f7" id="f7_3" value="תמיד"><label for="f7_3">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">אוהב משחקי כדור ומשחקים בחצר</div><div class="freq-options"><input type="radio" name="f8" id="f8_0" value="אף פעם"><label for="f8_0">אף פעם</label><input type="radio" name="f8" id="f8_1" value="לעיתים רחוקות"><label for="f8_1">לעיתים רחוקות</label><input type="radio" name="f8" id="f8_2" value="לעיתים קרובות"><label for="f8_2">לעיתים קרובות</label><input type="radio" name="f8" id="f8_3" value="תמיד"><label for="f8_3">תמיד</label></div></div>
+    <div class="subsection-title">רפלקס מורו (Moro)</div>
+    <div class="sub-blurb">רפלקס הבהלה הראשוני. כשנותר פעיל, מערכת העצבים הסימפתטית דרוכה תמיד.</div>
+    <div class="freq-card"><div class="freq-q">תגובות רגשיות מוקצנות או התפרצויות זעם פתאומיות</div><div class="freq-options"><input type="radio" name="m1" id="m1_0" value="אף פעם"><label for="m1_0">אף פעם</label><input type="radio" name="m1" id="m1_1" value="לעיתים רחוקות"><label for="m1_1">לעיתים רחוקות</label><input type="radio" name="m1" id="m1_2" value="לעיתים קרובות"><label for="m1_2">לעיתים קרובות</label><input type="radio" name="m1" id="m1_3" value="תמיד"><label for="m1_3">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">פחד מובהק משינויים פתאומיים בסדר היום או במעברים</div><div class="freq-options"><input type="radio" name="m2" id="m2_0" value="אף פעם"><label for="m2_0">אף פעם</label><input type="radio" name="m2" id="m2_1" value="לעיתים רחוקות"><label for="m2_1">לעיתים רחוקות</label><input type="radio" name="m2" id="m2_2" value="לעיתים קרובות"><label for="m2_2">לעיתים קרובות</label><input type="radio" name="m2" id="m2_3" value="תמיד"><label for="m2_3">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">רגישות מוגברת לאור חזק (הסתנוורות) או לרעשים פתאומיים</div><div class="freq-options"><input type="radio" name="m3" id="m3_0" value="אף פעם"><label for="m3_0">אף פעם</label><input type="radio" name="m3" id="m3_1" value="לעיתים רחוקות"><label for="m3_1">לעיתים רחוקות</label><input type="radio" name="m3" id="m3_2" value="לעיתים קרובות"><label for="m3_2">לעיתים קרובות</label><input type="radio" name="m3" id="m3_3" value="תמיד"><label for="m3_3">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">קשיי הירדמות או התעוררויות מרובות בשל דריכות גופנית</div><div class="freq-options"><input type="radio" name="m4" id="m4_0" value="אף פעם"><label for="m4_0">אף פעם</label><input type="radio" name="m4" id="m4_1" value="לעיתים רחוקות"><label for="m4_1">לעיתים רחוקות</label><input type="radio" name="m4" id="m4_2" value="לעיתים קרובות"><label for="m4_2">לעיתים קרובות</label><input type="radio" name="m4" id="m4_3" value="תמיד"><label for="m4_3">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">חרדתיות יתר בסיטואציות חברתיות או חדשות</div><div class="freq-options"><input type="radio" name="m5" id="m5_0" value="אף פעם"><label for="m5_0">אף פעם</label><input type="radio" name="m5" id="m5_1" value="לעיתים רחוקות"><label for="m5_1">לעיתים רחוקות</label><input type="radio" name="m5" id="m5_2" value="לעיתים קרובות"><label for="m5_2">לעיתים קרובות</label><input type="radio" name="m5" id="m5_3" value="תמיד"><label for="m5_3">תמיד</label></div></div>
+    <div class="subsection-title">רפלקסים ספינאליים (Galant ו-Perez)</div>
+    <div class="sub-blurb">רפלקסים אלו קשורים לתנועתיות עמוד השדרה והאגן, ואחראיים על קשיים בשליטה על סוגרים.</div>
+    <div class="freq-card"><div class="freq-q">חוסר שקט בולט בישיבה (תנועתיות יתר של האגן, התפתלות על הכיסא)</div><div class="freq-options"><input type="radio" name="s1" id="s1_0" value="אף פעם"><label for="s1_0">אף פעם</label><input type="radio" name="s1" id="s1_1" value="לעיתים רחוקות"><label for="s1_1">לעיתים רחוקות</label><input type="radio" name="s1" id="s1_2" value="לעיתים קרובות"><label for="s1_2">לעיתים קרובות</label><input type="radio" name="s1" id="s1_3" value="תמיד"><label for="s1_3">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">רגישות מוגברת למגע באזור המותניים (חגורת מכנסיים, ג&#x27;ינסים או בגדים צמודים)</div><div class="freq-options"><input type="radio" name="s2" id="s2_0" value="אף פעם"><label for="s2_0">אף פעם</label><input type="radio" name="s2" id="s2_1" value="לעיתים רחוקות"><label for="s2_1">לעיתים רחוקות</label><input type="radio" name="s2" id="s2_2" value="לעיתים קרובות"><label for="s2_2">לעיתים קרובות</label><input type="radio" name="s2" id="s2_3" value="תמיד"><label for="s2_3">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">קושי בריכוז לאורך זמן, במיוחד במשימות הדורשות ישיבה סטטית</div><div class="freq-options"><input type="radio" name="s3" id="s3_0" value="אף פעם"><label for="s3_0">אף פעם</label><input type="radio" name="s3" id="s3_1" value="לעיתים רחוקות"><label for="s3_1">לעיתים רחוקות</label><input type="radio" name="s3" id="s3_2" value="לעיתים קרובות"><label for="s3_2">לעיתים קרובות</label><input type="radio" name="s3" id="s3_3" value="תמיד"><label for="s3_3">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">היסטוריה של הרטבת לילה או קשיים בשליטה על סוגרים אחרי גיל 5</div><div class="freq-options"><input type="radio" name="s4" id="s4_0" value="אף פעם"><label for="s4_0">אף פעם</label><input type="radio" name="s4" id="s4_1" value="לעיתים רחוקות"><label for="s4_1">לעיתים רחוקות</label><input type="radio" name="s4" id="s4_2" value="לעיתים קרובות"><label for="s4_2">לעיתים קרובות</label><input type="radio" name="s4" id="s4_3" value="תמיד"><label for="s4_3">תמיד</label></div></div>
+    <div class="form-group"><label>הרטבת לילה / שליטה בסוגרים אחרי גיל 5 – אנא פרטו:</label><textarea name="s4_detail" rows="2" placeholder="תארו כאן..."></textarea></div>
+  </div>
+</div>
+
+<div class="section" id="noa-sensory">
+  <div class="section-header">
+    <div class="part-label">חלק ד</div>
+    <h2>פרופיל חושי</h2>
+    <div class="section-sub">מה בולט אצלו</div><div class="owner">נועה שביט</div>
+  </div>
+  <div class="section-body">
+    <div class="info-box">סמנו את מה שבולט אצלו. אפשר לסמן כמה, או אף אחד.</div>
+    <div class="freq-card"><div class="freq-q">סמנו את המאפיינים שבולטים אצל ילדכם: <span class="hint">(אפשר לסמן יותר מאחד)</span></div><div class="choice-options multi"><input type="checkbox" name="sensory" id="sensory_0" value="רתיעה ממגע, חיבוקים או קרבה פיזית"><label for="sensory_0">רתיעה ממגע, חיבוקים או קרבה פיזית</label><input type="checkbox" name="sensory" id="sensory_1" value="רגישות לתפרים בגרביים, תוויות בבגדים או מרקמי בד (ג&#x27;ינס)"><label for="sensory_1">רגישות לתפרים בגרביים, תוויות בבגדים או מרקמי בד (ג&#x27;ינס)</label><input type="checkbox" name="sensory" id="sensory_2" value="הימנעות מחול, דשא או לכלוך על הידיים/פנים"><label for="sensory_2">הימנעות מחול, דשא או לכלוך על הידיים/פנים</label><input type="checkbox" name="sensory" id="sensory_3" value="רגישות לאור חזק, רעשים פתאומיים או ריחות (בשמים, אוכל)"><label for="sensory_3">רגישות לאור חזק, רעשים פתאומיים או ריחות (בשמים, אוכל)</label><input type="checkbox" name="sensory" id="sensory_4" value="סלידה ממרקמי אוכל מסוימים וצורך בהפרדת מאכלים בצלחת"><label for="sensory_4">סלידה ממרקמי אוכל מסוימים וצורך בהפרדת מאכלים בצלחת</label><input type="checkbox" name="sensory" id="sensory_5" value="צורך במגע חזק מאוד, חיבוקים &#x27;מועצמים&#x27; או התנגשות בחפצים/אנשים"><label for="sensory_5">צורך במגע חזק מאוד, חיבוקים &#x27;מועצמים&#x27; או התנגשות בחפצים/אנשים</label><input type="checkbox" name="sensory" id="sensory_6" value="נשיכת חפצים, ידיים או הכנסת בגדים לפה"><label for="sensory_6">נשיכת חפצים, ידיים או הכנסת בגדים לפה</label><input type="checkbox" name="sensory" id="sensory_7" value="חוסר מודעות לכאב, פציעות או לטמפרטורה (חום/קור)"><label for="sensory_7">חוסר מודעות לכאב, פציעות או לטמפרטורה (חום/קור)</label><input type="checkbox" name="sensory" id="sensory_8" value="נטייה לנפילות יזומות על הרצפה או קפיצה ממקומות גבוהים"><label for="sensory_8">נטייה לנפילות יזומות על הרצפה או קפיצה ממקומות גבוהים</label><input type="checkbox" name="sensory" id="sensory_9" value="נטייה לנפילות, נתקע בחפצים, קלמזיות"><label for="sensory_9">נטייה לנפילות, נתקע בחפצים, קלמזיות</label><input type="checkbox" name="sensory" id="sensory_10" value="חוסר מודעות לרטיבות או לכלוך בגוף"><label for="sensory_10">חוסר מודעות לרטיבות או לכלוך בגוף</label></div></div>
+  </div>
+</div>
+
+<div class="section" id="calm">
+  <div class="section-header">
+    <div class="part-label">חלק ה</div>
+    <h2>רגיעה</h2>
+    <div class="section-sub">מה עוזר לו כשקשה</div><div class="owner">יעל שוורץ</div>
+  </div>
+  <div class="section-body">
+    <div class="info-box">ברוב השאלות כאן מספיק לסמן. אפשר לסמן כמה תשובות, ולדלג על מה שלא מתאים.</div>
+    <div class="freq-card"><div class="freq-q">איך אתם יודעים שמתחיל להיות לו קשה? <span class="hint">(אפשר לסמן יותר מאחד)</span></div><div class="choice-options multi"><input type="checkbox" name="m7" id="m7_0" value="נהיה שקט ומתכנס"><label for="m7_0">נהיה שקט ומתכנס</label><input type="checkbox" name="m7" id="m7_1" value="נהיה קולני יותר"><label for="m7_1">נהיה קולני יותר</label><input type="checkbox" name="m7" id="m7_2" value="זז הרבה"><label for="m7_2">זז הרבה</label><input type="checkbox" name="m7" id="m7_3" value="בוכה"><label for="m7_3">בוכה</label><input type="checkbox" name="m7" id="m7_4" value="אומר את זה במילים"><label for="m7_4">אומר את זה במילים</label><input type="checkbox" name="m7" id="m7_5" value="מתקרב אליכם"><label for="m7_5">מתקרב אליכם</label><input type="checkbox" name="m7" id="m7_6" value="מתרחק"><label for="m7_6">מתרחק</label></div></div>
+    <div class="freq-card"><div class="freq-q">מה עוזר לו להירגע כשקשה לו? <span class="hint">(אפשר לסמן יותר מאחד)</span></div><div class="choice-options multi"><input type="checkbox" name="m8" id="m8_0" value="חיבוק או מגע חזק"><label for="m8_0">חיבוק או מגע חזק</label><input type="checkbox" name="m8" id="m8_1" value="להיות קרוב לאמא או לאבא"><label for="m8_1">להיות קרוב לאמא או לאבא</label><input type="checkbox" name="m8" id="m8_2" value="זמן לבד ושקט"><label for="m8_2">זמן לבד ושקט</label><input type="checkbox" name="m8" id="m8_3" value="תנועה (קפיצות, ריקוד, ריצה)"><label for="m8_3">תנועה (קפיצות, ריקוד, ריצה)</label><input type="checkbox" name="m8" id="m8_4" value="מים (מקלחת, אמבטיה, בריכה)"><label for="m8_4">מים (מקלחת, אמבטיה, בריכה)</label><input type="checkbox" name="m8" id="m8_5" value="שירה או מוזיקה"><label for="m8_5">שירה או מוזיקה</label><input type="checkbox" name="m8" id="m8_6" value="הצעצועים האהובים עליו"><label for="m8_6">הצעצועים האהובים עליו</label><input type="checkbox" name="m8" id="m8_7" value="שיחה והסבר"><label for="m8_7">שיחה והסבר</label></div></div>
+    <div class="form-group"><label>מה עוזר לו בבוקר לצאת לבית הספר?</label><textarea name="o9" rows="2" placeholder="תארו כאן..."></textarea></div>
+  </div>
+</div>
+
+<div class="section" id="connect">
+  <div class="section-header">
+    <div class="part-label">חלק ו</div>
+    <h2>קשר ותקשורת</h2>
+    <div class="section-sub">איך הוא מתקרב ומשתף</div><div class="owner">יעל שוורץ</div>
+  </div>
+  <div class="section-body">
+    <div class="info-box">כל ילד מתקשר בדרך שלו. כאן נשמח להבין את הדרכים שלו.</div>
+    <div class="freq-card"><div class="freq-q">איך הוא מראה לכם שהוא אוהב אתכם או רוצה להיות קרוב? <span class="hint">(אפשר לסמן יותר מאחד)</span></div><div class="choice-options multi"><input type="checkbox" name="m10" id="m10_0" value="חיבוק"><label for="m10_0">חיבוק</label><input type="checkbox" name="m10" id="m10_1" value="יושב צמוד אליכם"><label for="m10_1">יושב צמוד אליכם</label><input type="checkbox" name="m10" id="m10_2" value="מביא לכם משהו להראות"><label for="m10_2">מביא לכם משהו להראות</label><input type="checkbox" name="m10" id="m10_3" value="מספר לכם דברים"><label for="m10_3">מספר לכם דברים</label><input type="checkbox" name="m10" id="m10_4" value="שר או רוקד בשבילכם"><label for="m10_4">שר או רוקד בשבילכם</label><input type="checkbox" name="m10" id="m10_5" value="מבקש שתשחקו איתו"><label for="m10_5">מבקש שתשחקו איתו</label></div></div>
+    <div class="freq-card"><div class="freq-q">איך הוא מראה לכם מה הוא צריך או מרגיש? <span class="hint">(אפשר לסמן יותר מאחד)</span></div><div class="choice-options multi"><input type="checkbox" name="m11" id="m11_0" value="אומר במילים"><label for="m11_0">אומר במילים</label><input type="checkbox" name="m11" id="m11_1" value="בגוף או בפנים"><label for="m11_1">בגוף או בפנים</label><input type="checkbox" name="m11" id="m11_2" value="מביא או מצביע"><label for="m11_2">מביא או מצביע</label><input type="checkbox" name="m11" id="m11_3" value="דרך משחק או שיר"><label for="m11_3">דרך משחק או שיר</label><input type="checkbox" name="m11" id="m11_4" value="דרך התנהגות (בכי, צעקה, התרחקות)"><label for="m11_4">דרך התנהגות (בכי, צעקה, התרחקות)</label><input type="checkbox" name="m11" id="m11_5" value="לפעמים קשה לנו לדעת"><label for="m11_5">לפעמים קשה לנו לדעת</label></div></div>
+    <div class="form-group"><label>על מה הוא הכי אוהב לדבר איתכם?</label><textarea name="o12" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>מה עוזר לשיחה איתו לזרום?</label><textarea name="o13" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="subsection-title">שתי השפות שלו</div>
+    <div class="freq-card"><div class="freq-q">באיזו שפה קל לו יותר לדבר?</div><div class="choice-options"><input type="radio" name="c14" id="c14_0" value="עברית"><label for="c14_0">עברית</label><input type="radio" name="c14" id="c14_1" value="אנגלית"><label for="c14_1">אנגלית</label><input type="radio" name="c14" id="c14_2" value="בשתיהן באותה מידה"><label for="c14_2">בשתיהן באותה מידה</label></div></div>
+    <div class="freq-card"><div class="freq-q">באיזו שפה קל לו יותר לספר על רגשות?</div><div class="choice-options"><input type="radio" name="c15" id="c15_0" value="עברית"><label for="c15_0">עברית</label><input type="radio" name="c15" id="c15_1" value="אנגלית"><label for="c15_1">אנגלית</label><input type="radio" name="c15" id="c15_2" value="בשתיהן באותה מידה"><label for="c15_2">בשתיהן באותה מידה</label><input type="radio" name="c15" id="c15_3" value="עוד קשה לו בשתיהן"><label for="c15_3">עוד קשה לו בשתיהן</label></div></div>
+    <div class="form-group"><label>באיזו שפה מדבר איתו היום כל אחד מכם?</label><textarea name="o16" rows="2" placeholder="תארו כאן..."></textarea></div>
+  </div>
+</div>
+
+<div class="section" id="play">
+  <div class="section-header">
+    <div class="part-label">חלק ז</div>
+    <h2>משחק ורגשות</h2>
+    <div class="section-sub">מה הוא אוהב, ואיך הוא מבטא את עצמו</div><div class="owner">יעל שוורץ</div>
+  </div>
+  <div class="section-body">
+    <div class="info-box">סמנו מה שמתאים, ואם בא לכם, הוסיפו כמה מילים.</div>
+    <div class="freq-card"><div class="freq-q">איך הוא אוהב לשחק? <span class="hint">(אפשר לסמן יותר מאחד)</span></div><div class="choice-options multi"><input type="checkbox" name="m17" id="m17_0" value="עם האוסף או הצעצועים האהובים עליו"><label for="m17_0">עם האוסף או הצעצועים האהובים עליו</label><input type="checkbox" name="m17" id="m17_1" value="שירה וריקוד"><label for="m17_1">שירה וריקוד</label><input type="checkbox" name="m17" id="m17_2" value="הצגות ותחפושות"><label for="m17_2">הצגות ותחפושות</label><input type="checkbox" name="m17" id="m17_3" value="בנייה ומסלולים"><label for="m17_3">בנייה ומסלולים</label><input type="checkbox" name="m17" id="m17_4" value="משחקי תנועה בחוץ"><label for="m17_4">משחקי תנועה בחוץ</label><input type="checkbox" name="m17" id="m17_5" value="ציור ויצירה"><label for="m17_5">ציור ויצירה</label><input type="checkbox" name="m17" id="m17_6" value="מסכים"><label for="m17_6">מסכים</label></div></div>
+    <div class="freq-card"><div class="freq-q">כשאתם משחקים יחד, איך זה נראה בדרך כלל?</div><div class="choice-options"><input type="radio" name="c18" id="c18_0" value="הוא מוביל ואנחנו מצטרפים"><label for="c18_0">הוא מוביל ואנחנו מצטרפים</label><input type="radio" name="c18" id="c18_1" value="אנחנו מציעים והוא מצטרף"><label for="c18_1">אנחנו מציעים והוא מצטרף</label><input type="radio" name="c18" id="c18_2" value="כל אחד משחק ליד השני"><label for="c18_2">כל אחד משחק ליד השני</label><input type="radio" name="c18" id="c18_3" value="משתנה מיום ליום"><label for="c18_3">משתנה מיום ליום</label></div></div>
+    <div class="form-group"><label>תחום העניין האהוב עליו (למשל אוסף או משחק מסוים): מה הוא אוהב לעשות איתו, ואיך אפשר להצטרף אליו?</label><textarea name="o19" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="subsection-title">רגשות</div>
+    <div class="freq-card"><div class="freq-q">על אילו רגשות הוא מדבר? <span class="hint">(אפשר לסמן יותר מאחד)</span></div><div class="choice-options multi"><input type="checkbox" name="m20" id="m20_0" value="שמחה"><label for="m20_0">שמחה</label><input type="checkbox" name="m20" id="m20_1" value="עצב"><label for="m20_1">עצב</label><input type="checkbox" name="m20" id="m20_2" value="כעס"><label for="m20_2">כעס</label><input type="checkbox" name="m20" id="m20_3" value="פחד"><label for="m20_3">פחד</label><input type="checkbox" name="m20" id="m20_4" value="געגוע"><label for="m20_4">געגוע</label><input type="checkbox" name="m20" id="m20_5" value="בושה"><label for="m20_5">בושה</label><input type="checkbox" name="m20" id="m20_6" value="גאווה"><label for="m20_6">גאווה</label><input type="checkbox" name="m20" id="m20_7" value="עוד לא מדבר על רגשות במילים"><label for="m20_7">עוד לא מדבר על רגשות במילים</label></div></div>
+    <div class="form-group"><label>כשמשהו קרה לו (בבית הספר, עם חבר), איך הוא מספר לכם על זה?</label><textarea name="o21" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>ספרו על פעם שראיתם אותו שם לב למה שמישהו אחר מרגיש.</label><textarea name="o22" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>לפעמים ילדים אומרים שהם רוצים להישאר קטנים. אם זה קורה גם אצלו, מה לדעתכם הוא מרגיש ברגעים האלה?</label><textarea name="o23" rows="2" placeholder="תארו כאן..."></textarea></div>
+  </div>
+</div>
+
+<div class="section" id="social">
+  <div class="section-header">
+    <div class="part-label">חלק ח</div>
+    <h2>חברים</h2>
+    <div class="section-sub">מה עוזר לו להתחבר</div><div class="owner">יעל שוורץ</div>
+  </div>
+  <div class="section-body">
+    <div class="info-box">החלק הזה עוזר לנו להבין מה מקל עליו להתחבר.</div>
+    <div class="freq-card"><div class="freq-q">באילו מצבים הכי קל לו להתחבר לילד אחר? <span class="hint">(אפשר לסמן יותר מאחד)</span></div><div class="choice-options multi"><input type="checkbox" name="m24" id="m24_0" value="אחד על אחד"><label for="m24_0">אחד על אחד</label><input type="checkbox" name="m24" id="m24_1" value="בפעילות מובנית עם מבוגר (חוג, משחק עם חוקים)"><label for="m24_1">בפעילות מובנית עם מבוגר (חוג, משחק עם חוקים)</label><input type="checkbox" name="m24" id="m24_2" value="סביב תחום עניין משותף"><label for="m24_2">סביב תחום עניין משותף</label><input type="checkbox" name="m24" id="m24_3" value="עם בנות"><label for="m24_3">עם בנות</label><input type="checkbox" name="m24" id="m24_4" value="עם ילדים צעירים ממנו"><label for="m24_4">עם ילדים צעירים ממנו</label><input type="checkbox" name="m24" id="m24_5" value="עם ילדים גדולים ממנו"><label for="m24_5">עם ילדים גדולים ממנו</label><input type="checkbox" name="m24" id="m24_6" value="עם מבוגרים"><label for="m24_6">עם מבוגרים</label></div></div>
+    <div class="form-group"><label>ספרו על חבר או חברה שהוא אוהב: מה הם אוהבים לעשות יחד?</label><textarea name="o25" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>עם מי הוא הכי מרגיש את עצמו?</label><textarea name="o26" rows="2" placeholder="תארו כאן..."></textarea></div>
+  </div>
+</div>
+
+<div class="section" id="trans">
+  <div class="section-header">
+    <div class="part-label">חלק ט</div>
+    <h2>מעברים ושינויים</h2>
+    <div class="section-sub">מה עוזר לו לעבור ממצב למצב</div><div class="owner">יעל שוורץ</div>
+  </div>
+  <div class="section-body">
+    <div class="info-box">המעברים שהוא כבר עבר מלמדים אותנו הרבה עליו. מספיקות כמה מילים בכל שדה, ואם מעבר מסוים לא רלוונטי, דלגו עליו.</div>
+    <div class="moment-card"><div class="moment-title">הכניסה לגן</div>
+      <div class="moment-field"><span>איך זה היה לו?</span><input type="text" name="t27"></div>
+      <div class="moment-field"><span>כמה זמן לקח לו להתרגל?</span><input type="text" name="t28"></div>
+      <div class="moment-field"><span>מה עזר?</span><input type="text" name="t29"></div>
+    </div>
+    <div class="moment-card"><div class="moment-title">הכניסה לכיתה א׳</div>
+      <div class="moment-field"><span>איך זה היה לו?</span><input type="text" name="t30"></div>
+      <div class="moment-field"><span>כמה זמן לקח לו להתרגל?</span><input type="text" name="t31"></div>
+      <div class="moment-field"><span>מה עזר?</span><input type="text" name="t32"></div>
+    </div>
+    <div class="moment-card"><div class="moment-title">טיול בחו״ל (בחרו טיול אחד שאתם זוכרים טוב)</div>
+      <div class="moment-field"><span>איך זה היה לו?</span><input type="text" name="t33"></div>
+      <div class="moment-field"><span>כמה זמן לקח לו להתרגל?</span><input type="text" name="t34"></div>
+      <div class="moment-field"><span>מה עזר?</span><input type="text" name="t35"></div>
+    </div>
+    <div class="moment-card"><div class="moment-title">מעבר או פרידה אחרים (מעבר דירה, מישהו קרוב שעזב, סוף טיפול)</div>
+      <div class="moment-field"><span>איך זה היה לו?</span><input type="text" name="t36"></div>
+      <div class="moment-field"><span>כמה זמן לקח לו להתרגל?</span><input type="text" name="t37"></div>
+      <div class="moment-field"><span>מה עזר?</span><input type="text" name="t38"></div>
+    </div>
+    <div class="freq-card"><div class="freq-q">כשמשהו נגמר (חופשה, ביקור של סבא וסבתא, יום כיף), הוא מצליח להיפרד בלי קושי גדול.</div><div class="freq-options"><input type="radio" name="q39" id="q39_0" value="אף פעם"><label for="q39_0">אף פעם</label><input type="radio" name="q39" id="q39_1" value="לעיתים רחוקות"><label for="q39_1">לעיתים רחוקות</label><input type="radio" name="q39" id="q39_2" value="לעיתים קרובות"><label for="q39_2">לעיתים קרובות</label><input type="radio" name="q39" id="q39_3" value="תמיד"><label for="q39_3">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">הכנה מראש (לספר לו מה יקרה ומתי) עוזרת לו לעבור שינוי.</div><div class="freq-options"><input type="radio" name="q40" id="q40_0" value="אף פעם"><label for="q40_0">אף פעם</label><input type="radio" name="q40" id="q40_1" value="לעיתים רחוקות"><label for="q40_1">לעיתים רחוקות</label><input type="radio" name="q40" id="q40_2" value="לעיתים קרובות"><label for="q40_2">לעיתים קרובות</label><input type="radio" name="q40" id="q40_3" value="תמיד"><label for="q40_3">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">לפני שינוי הוא שואל הרבה שאלות (מה יהיה, מתי, מי יהיה שם).</div><div class="freq-options"><input type="radio" name="q41" id="q41_0" value="אף פעם"><label for="q41_0">אף פעם</label><input type="radio" name="q41" id="q41_1" value="לעיתים רחוקות"><label for="q41_1">לעיתים רחוקות</label><input type="radio" name="q41" id="q41_2" value="לעיתים קרובות"><label for="q41_2">לעיתים קרובות</label><input type="radio" name="q41" id="q41_3" value="תמיד"><label for="q41_3">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">קשה לו כשמשהו שהובטח לו משתנה או מתבטל.</div><div class="freq-options"><input type="radio" name="q42" id="q42_0" value="אף פעם"><label for="q42_0">אף פעם</label><input type="radio" name="q42" id="q42_1" value="לעיתים רחוקות"><label for="q42_1">לעיתים רחוקות</label><input type="radio" name="q42" id="q42_2" value="לעיתים קרובות"><label for="q42_2">לעיתים קרובות</label><input type="radio" name="q42" id="q42_3" value="תמיד"><label for="q42_3">תמיד</label></div></div>
+    <div class="form-group"><label>איך הוא מגיב כשמספרים לו על שינוי שעוד לא קרה?</label><textarea name="o43" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>מקומות חדשים, הומים או רועשים (שדה תעופה, קניון, אירוע משפחתי): איך הוא עובר אותם, ומה עוזר?</label><textarea name="o44" rows="2" placeholder="תארו כאן..."></textarea></div>
+  </div>
+</div>
+
+<div class="submit-area">
+  <button type="submit" class="btn-submit">📨 שליחת השאלון</button>
+  <p class="submit-note">התשובות נשמרות בצורה מאובטחת, ומשמשות את הצוות המטפל בלבד.</p>
+</div>
+</form>
+</div>
+<div class="footer">
+  יעל שוורץ ונועה שביט<br>
+  בפגישה הבאה נשתף אתכם במה שלמדנו מהתשובות שלכם.
+</div>
+<div id="success-overlay">
+  <div class="success-card">
+    <div class="icon">✅</div>
+    <h2>תודה על מילוי השאלון!</h2>
+    <p>התשובות שלכם התקבלו, ויעזרו לנו להכין את המפגש הבא.</p>
+    <button class="btn-close-success" onclick="document.getElementById('success-overlay').classList.remove('show')">סגור</button>
+  </div>
+</div>
+<div id="toast"></div>
+<script>
+// להדביק כאן את כתובת ה-Web App של Google Apps Script המחובר לגיליון התשובות
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-6k-QWQRepNga3hrCqvXigL9Lqmv6_eSvBJIr9T_jpPzO0F6pwe6C73Rb3RHj82Xujw/exec';
+const STORE_KEY = 'parent_q_y_v1';
+const LABELS = {"o1": "מה אתם הכי אוהבים בילד שלכם?", "o2": "איך הייתם מתארים אותו בשלוש-ארבע מילים?", "o3": "מה מרתק אותו היום? (אוספים, שירה, ריקוד, או כל דבר אחר שהוא אוהב)", "o4": "ספרו על רגע אחרון שבו ראיתם אותו גאה בעצמו.", "o5": "אילו חפצים, הרגלים או טקסים יומיים חשובים לו במיוחד?", "o6": "מה הייתם רוצים שמורה חדשה תדע עליו כבר ביום הראשון?", "vision_detail": "בדיקות ראייה – תוצאות", "surgeries": "האם עבר ניתוחים?", "hearing_detail": "בדיקת שמיעה – תוצאות", "muscle_issue": "גמישות יתר / חולשה / נוקשות שרירים", "muscle_issue_detail": "גמישות יתר / חולשה / נוקשות – אזורים", "restricted_movements": "פעולות מוטוריות אסורות", "restricted_movements_detail": "פעולות מוטוריות אסורות – פירוט", "breathing_issues": "בעיות נשימה", "heart_issues": "בעיות לב ודם", "posture_issues": "שבר או בעיות יציבה", "hospitalization": "האם אושפז?", "medications": "האם לוקח תרופות?", "trauma": "האם חווה טראומה?", "startle_response": "האם הילד נבהל בקלות?", "other_medical": "פרט רפואי נוסף", "f1": "רגישות למגע (מטרד מתפרים בגרביים, תוויות, רתיעה מחיבוק)", "f2": "רגישות לרעשים פתאומיים או רעשי רקע (מזגן, לעיסות)", "f3": "מוסחות גבוהה מגירויים ויזואליים (קושי להתמקד בסביבה עמוסה)", "f4": "סרבול מוטורי, נטייה להיתקל בחפצים או ליפול", "f5": "צורך במגע חזק, חיבוק מוחץ או הטחות עצמיות על הספה", "f6": "קושי בהערכת מרחב אישי (עומד קרוב מדי לאחרים)", "f7": "האם בוכה כאשר מקבל מכה?", "f8": "האם אוהב משחקי כדור ומשחקים בחצר?", "m1": "תגובות רגשיות מוקצנות או התפרצויות זעם פתאומיות", "m2": "פחד מובהק משינויים פתאומיים בסדר היום או במעברים", "m3": "רגישות מוגברת לאור חזק (הסתנוורות) או לרעשים פתאומיים", "m4": "קשיי הירדמות או התעוררויות מרובות בשל דריכות גופנית", "m5": "חרדתיות יתר בסיטואציות חברתיות או חדשות", "s1": "חוסר שקט בולט בישיבה (תנועתיות יתר של האגן, התפתלות על הכיסא)", "s2": "רגישות מוגברת למגע באזור המותניים (חגורת מכנסיים, ג'ינסים או בגדים צמודים)", "s3": "קושי בריכוז לאורך זמן, במיוחד במשימות הדורשות ישיבה סטטית", "s4": "היסטוריה של הרטבת לילה או קשיים בשליטה על סוגרים אחרי גיל 5", "s4_detail": "הרטבת לילה / שליטה בסוגרים אחרי גיל 5 – פירוט", "sensory": "פרופיל חושי – מאפיינים בולטים", "m7": "איך אתם יודעים שמתחיל להיות לו קשה?", "m8": "מה עוזר לו להירגע כשקשה לו?", "o9": "מה עוזר לו בבוקר לצאת לבית הספר?", "m10": "איך הוא מראה לכם שהוא אוהב אתכם או רוצה להיות קרוב?", "m11": "איך הוא מראה לכם מה הוא צריך או מרגיש?", "o12": "על מה הוא הכי אוהב לדבר איתכם?", "o13": "מה עוזר לשיחה איתו לזרום?", "c14": "באיזו שפה קל לו יותר לדבר?", "c15": "באיזו שפה קל לו יותר לספר על רגשות?", "o16": "באיזו שפה מדבר איתו היום כל אחד מכם?", "m17": "איך הוא אוהב לשחק?", "c18": "כשאתם משחקים יחד, איך זה נראה בדרך כלל?", "o19": "תחום העניין האהוב עליו (למשל אוסף או משחק מסוים): מה הוא אוהב לעשות איתו, ואיך אפשר להצטרף אליו?", "m20": "על אילו רגשות הוא מדבר?", "o21": "כשמשהו קרה לו (בבית הספר, עם חבר), איך הוא מספר לכם על זה?", "o22": "ספרו על פעם שראיתם אותו שם לב למה שמישהו אחר מרגיש.", "o23": "לפעמים ילדים אומרים שהם רוצים להישאר קטנים. אם זה קורה גם אצלו, מה לדעתכם הוא מרגיש ברגעים האלה?", "m24": "באילו מצבים הכי קל לו להתחבר לילד אחר?", "o25": "ספרו על חבר או חברה שהוא אוהב: מה הם אוהבים לעשות יחד?", "o26": "עם מי הוא הכי מרגיש את עצמו?", "t27": "הכניסה לגן – איך זה היה לו?", "t28": "הכניסה לגן – כמה זמן לקח לו להתרגל?", "t29": "הכניסה לגן – מה עזר?", "t30": "הכניסה לכיתה א׳ – איך זה היה לו?", "t31": "הכניסה לכיתה א׳ – כמה זמן לקח לו להתרגל?", "t32": "הכניסה לכיתה א׳ – מה עזר?", "t33": "טיול בחו״ל (בחרו טיול אחד שאתם זוכרים טוב) – איך זה היה לו?", "t34": "טיול בחו״ל (בחרו טיול אחד שאתם זוכרים טוב) – כמה זמן לקח לו להתרגל?", "t35": "טיול בחו״ל (בחרו טיול אחד שאתם זוכרים טוב) – מה עזר?", "t36": "מעבר או פרידה אחרים (מעבר דירה, מישהו קרוב שעזב, סוף טיפול) – איך זה היה לו?", "t37": "מעבר או פרידה אחרים (מעבר דירה, מישהו קרוב שעזב, סוף טיפול) – כמה זמן לקח לו להתרגל?", "t38": "מעבר או פרידה אחרים (מעבר דירה, מישהו קרוב שעזב, סוף טיפול) – מה עזר?", "q39": "כשמשהו נגמר (חופשה, ביקור של סבא וסבתא, יום כיף), הוא מצליח להיפרד בלי קושי גדול.", "q40": "הכנה מראש (לספר לו מה יקרה ומתי) עוזרת לו לעבור שינוי.", "q41": "לפני שינוי הוא שואל הרבה שאלות (מה יהיה, מתי, מי יהיה שם).", "q42": "קשה לו כשמשהו שהובטח לו משתנה או מתבטל.", "o43": "איך הוא מגיב כשמספרים לו על שינוי שעוד לא קרה?", "o44": "מקומות חדשים, הומים או רועשים (שדה תעופה, קניון, אירוע משפחתי): איך הוא עובר אותם, ומה עוזר?"};
+const form = document.getElementById('mainForm');
+
+function snapshot() {
+  const d = {};
+  form.querySelectorAll('input[type="text"], textarea').forEach(el => { if (el.name) d[el.name] = el.value; });
+  form.querySelectorAll('input[type="radio"]:checked').forEach(r => { d[r.name] = r.value; });
+  form.querySelectorAll('input[type="checkbox"]:checked').forEach(c => { (d[c.name] = Array.isArray(d[c.name]) ? d[c.name] : []).push(c.value); });
+  return d;
+}
+function saveLocal() { try { localStorage.setItem(STORE_KEY, JSON.stringify(snapshot())); } catch (e) {} }
+function restoreLocal() {
+  let d = null;
+  try { d = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) {}
+  if (!d) return;
+  Object.entries(d).forEach(([name, val]) => {
+    form.querySelectorAll('[name="' + name + '"]').forEach(el => {
+      if (el.type === 'radio') el.checked = (el.value === val);
+      else if (el.type === 'checkbox') el.checked = Array.isArray(val) && val.includes(el.value);
+      else el.value = val;
+    });
+  });
+}
+function updateProgress() {
+  const g = {};
+  form.querySelectorAll('input[type="text"]:not(.detail), textarea').forEach(el => { g[el.name] = !!el.value.trim(); });
+  form.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(r => { g[r.name] = g[r.name] || r.checked; });
+  const v = Object.values(g);
+  const pct = v.length ? Math.round(v.filter(Boolean).length / v.length * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = 'השלמת הטופס: ' + pct + '%';
+}
+form.addEventListener('input', () => { updateProgress(); saveLocal(); });
+form.addEventListener('change', () => { updateProgress(); saveLocal(); });
+
+function collectData() {
+  const raw = snapshot(), d = { 'שאלון': 'Y', 'תאריך שליחה': new Date().toLocaleDateString('he-IL') };
+  Object.keys(LABELS).forEach(n => {
+    const v = raw[n];
+    d[LABELS[n]] = Array.isArray(v) ? v.join(' | ') : (v || '');
+  });
+  return d;
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+async function submitForm(e) {
+  e.preventDefault();
+  if (!APPS_SCRIPT_URL) { showToast('⚠️ השאלון עוד לא מחובר לשליחה. התשובות שמורות במכשיר, אנא פנו ליעל.'); return; }
+  try {
+    showToast('שולח...');
+    await fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(collectData()) });
+    setTimeout(() => document.getElementById('success-overlay').classList.add('show'), 600);
+  } catch (err) {
+    showToast('⚠️ השליחה לא הצליחה. התשובות שמורות, נסו שוב בעוד רגע.');
+  }
+}
+restoreLocal();
+updateProgress();
+</script>
+</body>
+</html>
