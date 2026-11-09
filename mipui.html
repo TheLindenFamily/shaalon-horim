@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>שאלון הורים | נועה שביט ויעל שוורץ</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --blue: #1a4a6b; --blue-light: #e8f4fd; --orange: #f5a623; --orange-light: #fff3e0;
+  --green: #27ae60; --red: #c0392b; --gray: #f4f6f9; --border: #cdd7e0; --text: #222; --sub: #555;
+}
+body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--gray); color: var(--text); direction: rtl; text-align: right; font-size: 16px; }
+.progress-bar-wrap { position: sticky; top: 0; z-index: 200; background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+.progress-track { height: 5px; background: #e0e0e0; }
+.progress-fill { height: 100%; background: var(--orange); transition: width 0.4s; width: 0%; }
+.progress-label { text-align: center; font-size: 0.75rem; color: #888; padding: 4px 0 5px; }
+.page-header { background: var(--blue); color: white; text-align: center; padding: 36px 16px 28px; }
+.page-header h1 { font-size: clamp(1.5rem, 5vw, 2.2rem); margin-bottom: 8px; }
+.page-header .subtitle { color: #7ec8e3; font-size: clamp(0.9rem, 3vw, 1.1rem); margin-bottom: 6px; }
+.page-header .authors { font-size: 0.9rem; opacity: 0.8; }
+.setup-panel { max-width: 800px; margin: 20px auto 0; padding: 0 12px; }
+.setup-toggle { background: white; border: 2px solid var(--orange); border-radius: 10px; padding: 14px 18px; cursor: pointer; width: 100%; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; font-weight: 700; color: #c67c00; transition: background 0.2s; }
+.setup-toggle:hover { background: var(--orange-light); }
+.setup-toggle .arrow { margin-right: auto; transition: transform 0.3s; font-size: 1.2rem; }
+.setup-toggle.open .arrow { transform: rotate(180deg); }
+.setup-body { display: none; background: white; border: 2px solid var(--orange); border-top: none; border-radius: 0 0 10px 10px; padding: 20px; }
+.setup-body.open { display: block; }
+.setup-step { margin-bottom: 18px; }
+.setup-step h4 { color: var(--blue); margin-bottom: 8px; font-size: 0.95rem; }
+.code-block { background: #1e1e2e; color: #cdd6f4; border-radius: 8px; padding: 14px 16px; font-family: monospace; font-size: 0.8rem; direction: ltr; text-align: left; overflow-x: auto; line-height: 1.6; white-space: pre; margin: 8px 0; }
+.setup-url-input { width: 100%; border: 1.5px solid var(--border); border-radius: 6px; padding: 10px 12px; font-size: 0.9rem; direction: ltr; text-align: left; margin-top: 6px; background: #fafcfe; }
+.setup-url-input:focus { outline: none; border-color: var(--blue); }
+.btn-save-url { margin-top: 8px; background: var(--green); color: white; border: none; border-radius: 6px; padding: 8px 20px; font-size: 0.9rem; cursor: pointer; font-weight: 600; }
+.url-status { font-size: 0.82rem; margin-top: 6px; }
+.url-status.ok { color: var(--green); }
+.url-status.missing { color: var(--red); }
+.wrapper { max-width: 800px; margin: 0 auto; padding: 0 12px; }
+.intro-box { background: #fff8e1; border-right: 5px solid var(--orange); border-radius: 8px; padding: 16px 18px; margin: 20px 0; font-size: 0.95rem; line-height: 1.7; }
+.toc { background: white; border-radius: 10px; padding: 18px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin-bottom: 24px; }
+.toc h3 { color: var(--blue); margin-bottom: 10px; font-size: 1rem; }
+.toc ul { list-style: none; }
+.toc li { padding: 4px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.9rem; }
+.toc li:last-child { border-bottom: none; }
+.toc a { color: var(--blue); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+.section { background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin-bottom: 24px; overflow: hidden; }
+.section-header { background: var(--blue); color: white; padding: 14px 20px; }
+.section-header .part-label { font-size: 0.8rem; opacity: 0.75; }
+.section-header h2 { font-size: clamp(1.1rem, 4vw, 1.4rem); margin: 2px 0; }
+.section-header .section-sub { font-size: 0.85rem; color: #7ec8e3; margin-top: 2px; }
+.section-body { padding: 20px; }
+.info-box { background: var(--blue-light); border-right: 4px solid var(--blue); border-radius: 6px; padding: 12px 14px; margin-bottom: 18px; font-size: 0.88rem; line-height: 1.65; font-style: italic; color: #333; }
+.form-group { margin-bottom: 20px; }
+.form-group > label { display: flex; align-items: flex-start; gap: 8px; font-weight: 600; margin-bottom: 8px; color: var(--blue); font-size: 0.95rem; line-height: 1.5; }
+.q-num { background: var(--blue); color: white; border-radius: 50%; min-width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+textarea, input[type="text"], input[type="tel"] { width: 100%; border: 1.5px solid var(--border); border-radius: 6px; padding: 10px 12px; font-family: inherit; font-size: 0.95rem; direction: rtl; background: #fafcfe; transition: border 0.2s; -webkit-appearance: none; }
+textarea { resize: vertical; min-height: 70px; }
+textarea:focus, input[type="text"]:focus, input[type="tel"]:focus { outline: none; border-color: var(--blue); background: white; }
+.subsection-title { font-weight: 700; color: var(--blue); font-size: 0.97rem; margin: 20px 0 10px; border-bottom: 2px solid #e8ecf0; padding-bottom: 6px; }
+.submit-area { text-align: center; margin-bottom: 40px; padding: 24px 12px; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+.btn-submit { background: var(--blue); color: white; border: none; padding: 16px 48px; font-size: 1.05rem; font-weight: 700; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 14px rgba(26,74,107,0.3); transition: background 0.2s, transform 0.1s; width: 100%; max-width: 340px; }
+.btn-submit:hover { background: #14375a; transform: translateY(-1px); }
+.btn-submit:active { transform: translateY(0); }
+.submit-note { margin-top: 12px; font-size: 0.82rem; color: #666; line-height: 1.6; }
+.footer { text-align: center; padding: 20px; font-size: 0.82rem; color: #888; border-top: 1px solid #e0e0e0; }
+#success-overlay { display: none; position: fixed; inset: 0; background: rgba(26,74,107,0.92); z-index: 9999; align-items: center; justify-content: center; padding: 16px; }
+#success-overlay.show { display: flex; }
+.success-card { background: white; border-radius: 16px; padding: 32px 24px; max-width: 420px; width: 100%; text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,0.3); }
+.success-card .icon { font-size: 2.5rem; margin-bottom: 12px; }
+.success-card h2 { color: var(--blue); margin-bottom: 10px; font-size: 1.3rem; }
+.success-card p { color: #555; font-size: 0.9rem; line-height: 1.65; margin-bottom: 16px; }
+.success-steps { text-align: right; margin: 12px 0; }
+.success-steps li { padding: 4px 0; font-size: 0.88rem; color: #333; }
+.btn-close-success { background: var(--blue); color: white; border: none; padding: 10px 32px; border-radius: 20px; cursor: pointer; font-size: 0.95rem; font-weight: 600; width: 100%; margin-top: 6px; }
+#toast { position: fixed; bottom: 24px; right: 50%; transform: translateX(50%); background: #333; color: white; border-radius: 8px; padding: 12px 20px; font-size: 0.9rem; z-index: 9998; opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 90%; }
+#toast.show { opacity: 1; }
+.freq-card { background:#f7f9fc; border-radius:10px; padding:14px 16px; margin-bottom:10px; }
+.freq-card .freq-q { font-weight:700; color:#1a4a6b; margin-bottom:10px; font-size:0.95rem; }
+.freq-options { display:flex; gap:6px; flex-wrap:wrap; }
+.freq-options input[type="radio"] { display:none; }
+.freq-options label { flex:1; min-width:66px; text-align:center; padding:8px 4px; border:1.5px solid #cdd7e0; border-radius:8px; cursor:pointer; font-size:0.76rem; color:#555; background:white; transition:all 0.15s; line-height:1.3; }
+.freq-options input[type="radio"]:checked + label { background:#1a4a6b; border-color:#1a4a6b; color:white; font-weight:700; }
+.freq-options label:hover { border-color:#1a4a6b; color:#1a4a6b; }
+.scale-legend { display:flex; flex-wrap:wrap; gap:10px; background:white; border-radius:10px; padding:14px 18px; box-shadow:0 2px 8px rgba(0,0,0,0.07); margin-bottom:24px; font-size:0.85rem; }
+.scale-legend .item { display:flex; align-items:center; gap:6px; }
+.scale-legend .dot { width:14px;height:14px;border-radius:50%;background:var(--blue); display:inline-block; }
+@media (max-width: 600px) {
+  .section-body { padding: 14px; }
+}
+</style>
+</head>
+<body>
+<div class="progress-bar-wrap">
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">השלמת הטופס: 0%</div>
+</div>
+<div class="page-header">
+  <h1>שאלון הורים</h1>
+  <div class="subtitle">גילאי 7–9 · גרסת הורים</div>
+  <div class="authors">נועה שביט ויעל שוורץ</div>
+</div>
+<div class="wrapper">
+<div class="intro-box" style="margin-top:20px;">
+  <strong>הורים יקרים, שלום רב!</strong><br>
+  השאלון הזה משלים את התמונה ההתפתחותית של ילדכם, בשישה תחומי התפתחות מרכזיים: רגשי, התנהגותי, גוף וחושים, תקשורתי, משחק וחברים, וקוגניטיבי. ענו כל היגד לפי מה שאתם רואים אצלו בחודש האחרון. אין תשובות נכונות או לא נכונות. בסוף השאלון יש גם כמה שאלות פתוחות וחמות על החוזקות והאופי שלו.<br><br>
+  <strong>נבקש שכל אחד מכם ימלא את השאלון בנפרד.</strong> כל הורה רואה את הילד מזווית אחרת, ושתי נקודות המבט חשובות לנו. התשובות נשמרות בדפדפן, ואפשר לעצור ולחזור. תודה על הזמן והכנות!
+</div>
+<div class="scale-legend">
+  <strong style="width:100%;color:var(--blue);margin-bottom:2px;">סולם הדירוג:</strong>
+  <div class="item"><span class="dot"></span>0 – אף פעם</div>
+  <div class="item"><span class="dot"></span>1 – לעיתים רחוקות</div>
+  <div class="item"><span class="dot"></span>2 – לפעמים</div>
+  <div class="item"><span class="dot"></span>3 – לעיתים קרובות</div>
+  <div class="item"><span class="dot"></span>4 – תמיד</div>
+</div>
+<div class="toc">
+  <h3>מה כולל השאלון?</h3>
+  <ul>
+    <li><a href="#emotional">חלק א: רגשי · קשר רגשי-חברתי</a></li>
+    <li><a href="#behavioral">חלק ב: התנהגותי · ויסות ושגרה</a></li>
+    <li><a href="#body">חלק ג: גוף וחושים · ויסות חושי ומודעות גוף</a></li>
+    <li><a href="#communication">חלק ד: תקשורתי · שפה ותקשורת</a></li>
+    <li><a href="#play">חלק ה: משחק וחברים · משחק וקשרים עם ילדים</a></li>
+    <li><a href="#cognitive">חלק ו: קוגניטיבי · חשיבה, קשב ולמידה</a></li>
+    <li><a href="#strengths">חלק ז: הילד השלם · חוזקות, עניין ואופי</a></li>
+  </ul>
+</div>
+<form id="mainForm" onsubmit="submitForm(event)">
+<div class="section" id="respondent">
+  <div class="section-header"><div class="part-label">פרטי מילוי</div><h2>מי ממלא/ת את השאלון</h2></div>
+  <div class="section-body">
+    <div class="form-group"><label>שם מלא</label><input type="text" name="ממלא/ת: שם" placeholder="שם מלא"></div>
+    <div class="form-group"><label>תפקיד / קרבה לילד</label><input type="text" name="ממלא/ת: קרבה" placeholder="למשל: אמא / אבא"></div>
+    <div class="form-group"><label>תאריך מילוי</label><input type="text" name="תאריך מילוי" placeholder="לדוגמה: 12.11.2026"></div>
+  </div>
+</div>
+<div class="section" id="emotional">
+  <div class="section-header"><div class="part-label">חלק א</div><h2>רגשי · קשר רגשי-חברתי</h2><div class="section-sub">קשר, שיתוף והבעה רגשית</div></div>
+  <div class="section-body">
+    <div class="info-box">תחום זה בוחן איך הילד משתף בחוויות, מבטא רגשות ופונה לקרבה ולנחמה.</div>
+    <div class="freq-card"><div class="freq-q">האם הוא משתף אתכם מיוזמתו במשהו ששימח או עניין אותו (סיפור מבית הספר, משהו שבנה או גילה)?</div><div class="freq-options"><input type="radio" name="1. רגשי: האם הוא משתף אתכם מיוזמתו במשהו ששימח או עניין אותו (סיפור מבית הספר, משהו שבנה או גילה)?" id="r1" value="אף פעם"><label for="r1">אף פעם</label><input type="radio" name="1. רגשי: האם הוא משתף אתכם מיוזמתו במשהו ששימח או עניין אותו (סיפור מבית הספר, משהו שבנה או גילה)?" id="r2" value="לעיתים רחוקות"><label for="r2">לעיתים רחוקות</label><input type="radio" name="1. רגשי: האם הוא משתף אתכם מיוזמתו במשהו ששימח או עניין אותו (סיפור מבית הספר, משהו שבנה או גילה)?" id="r3" value="לפעמים"><label for="r3">לפעמים</label><input type="radio" name="1. רגשי: האם הוא משתף אתכם מיוזמתו במשהו ששימח או עניין אותו (סיפור מבית הספר, משהו שבנה או גילה)?" id="r4" value="לעיתים קרובות"><label for="r4">לעיתים קרובות</label><input type="radio" name="1. רגשי: האם הוא משתף אתכם מיוזמתו במשהו ששימח או עניין אותו (סיפור מבית הספר, משהו שבנה או גילה)?" id="r5" value="תמיד"><label for="r5">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">האם הוא פונה אליכם לעזרה או לנחמה כשקשה לו, ולא נסגר או מתמודד לבד?</div><div class="freq-options"><input type="radio" name="2. רגשי: האם הוא פונה אליכם לעזרה או לנחמה כשקשה לו, ולא נסגר או מתמודד לבד?" id="r6" value="אף פעם"><label for="r6">אף פעם</label><input type="radio" name="2. רגשי: האם הוא פונה אליכם לעזרה או לנחמה כשקשה לו, ולא נסגר או מתמודד לבד?" id="r7" value="לעיתים רחוקות"><label for="r7">לעיתים רחוקות</label><input type="radio" name="2. רגשי: האם הוא פונה אליכם לעזרה או לנחמה כשקשה לו, ולא נסגר או מתמודד לבד?" id="r8" value="לפעמים"><label for="r8">לפעמים</label><input type="radio" name="2. רגשי: האם הוא פונה אליכם לעזרה או לנחמה כשקשה לו, ולא נסגר או מתמודד לבד?" id="r9" value="לעיתים קרובות"><label for="r9">לעיתים קרובות</label><input type="radio" name="2. רגשי: האם הוא פונה אליכם לעזרה או לנחמה כשקשה לו, ולא נסגר או מתמודד לבד?" id="r10" value="תמיד"><label for="r10">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">האם הוא מצליח לומר במילים מה הוא מרגיש (למשל ״אני מאוכזב״, ״זה הלחיץ אותי״), לפחות כשהוא רגוע?</div><div class="freq-options"><input type="radio" name="3. רגשי: האם הוא מצליח לומר במילים מה הוא מרגיש (למשל ״אני מאוכזב״, ״זה הלחיץ אותי״), לפחות כשהוא רגוע?" id="r11" value="אף פעם"><label for="r11">אף פעם</label><input type="radio" name="3. רגשי: האם הוא מצליח לומר במילים מה הוא מרגיש (למשל ״אני מאוכזב״, ״זה הלחיץ אותי״), לפחות כשהוא רגוע?" id="r12" value="לעיתים רחוקות"><label for="r12">לעיתים רחוקות</label><input type="radio" name="3. רגשי: האם הוא מצליח לומר במילים מה הוא מרגיש (למשל ״אני מאוכזב״, ״זה הלחיץ אותי״), לפחות כשהוא רגוע?" id="r13" value="לפעמים"><label for="r13">לפעמים</label><input type="radio" name="3. רגשי: האם הוא מצליח לומר במילים מה הוא מרגיש (למשל ״אני מאוכזב״, ״זה הלחיץ אותי״), לפחות כשהוא רגוע?" id="r14" value="לעיתים קרובות"><label for="r14">לעיתים קרובות</label><input type="radio" name="3. רגשי: האם הוא מצליח לומר במילים מה הוא מרגיש (למשל ״אני מאוכזב״, ״זה הלחיץ אותי״), לפחות כשהוא רגוע?" id="r15" value="תמיד"><label for="r15">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">האם הוא שם לב כשמישהו בבית עצוב או כועס, ומגיב לזה (שואל, מתקרב, מציע עזרה)?</div><div class="freq-options"><input type="radio" name="4. רגשי: האם הוא שם לב כשמישהו בבית עצוב או כועס, ומגיב לזה (שואל, מתקרב, מציע עזרה)?" id="r16" value="אף פעם"><label for="r16">אף פעם</label><input type="radio" name="4. רגשי: האם הוא שם לב כשמישהו בבית עצוב או כועס, ומגיב לזה (שואל, מתקרב, מציע עזרה)?" id="r17" value="לעיתים רחוקות"><label for="r17">לעיתים רחוקות</label><input type="radio" name="4. רגשי: האם הוא שם לב כשמישהו בבית עצוב או כועס, ומגיב לזה (שואל, מתקרב, מציע עזרה)?" id="r18" value="לפעמים"><label for="r18">לפעמים</label><input type="radio" name="4. רגשי: האם הוא שם לב כשמישהו בבית עצוב או כועס, ומגיב לזה (שואל, מתקרב, מציע עזרה)?" id="r19" value="לעיתים קרובות"><label for="r19">לעיתים קרובות</label><input type="radio" name="4. רגשי: האם הוא שם לב כשמישהו בבית עצוב או כועס, ומגיב לזה (שואל, מתקרב, מציע עזרה)?" id="r20" value="תמיד"><label for="r20">תמיד</label></div></div>
+    <div class="form-group"><label>תארו רגע מהחודש האחרון שבו הוא היה מוצף או נסער: מה קרה לפני, איך זה נראה, ומה עזר לו לחזור לאיזון?</label><textarea name="5. רגשי: תארו רגע מהחודש האחרון שבו הוא היה מוצף או נסער: מה קרה לפני, איך זה נראה, ומה עזר לו לחזור לאיזון?" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>באילו דרכים הוא מביע אהבה ורצון לקרבה? יש הבדל בקשר שלו עם כל אחד מכם?</label><textarea name="6. רגשי: באילו דרכים הוא מביע אהבה ורצון לקרבה? יש הבדל בקשר שלו עם כל אחד מכם?" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>אילו רגשות אתם רואים אצלו ביום רגיל, מעבר לשמח וכועס? יש רגש שקשה לו במיוחד להראות?</label><textarea name="7. רגשי: אילו רגשות אתם רואים אצלו ביום רגיל, מעבר לשמח וכועס? יש רגש שקשה לו במיוחד להראות?" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>איך הוא מגיב כשהוא טועה, מפסיד או לא מצליח? מה הוא אומר על עצמו ברגעים כאלה?</label><textarea name="8. רגשי: איך הוא מגיב כשהוא טועה, מפסיד או לא מצליח? מה הוא אומר על עצמו ברגעים כאלה?" rows="2" placeholder="תארו כאן..."></textarea></div>
+  </div>
+</div>
+<div class="section" id="behavioral">
+  <div class="section-header"><div class="part-label">חלק ב</div><h2>התנהגותי · ויסות ושגרה</h2><div class="section-sub">מעברים, בקשות יומיומיות וחזרה לאיזון</div></div>
+  <div class="section-body">
+    <div class="info-box">תחום זה בוחן איך הילד עובר בין פעילויות, נענה לבקשות היומיום, ואיך הוא חוזר לעצמו כשמשהו לא הולך כמצופה.</div>
+    <div class="freq-card"><div class="freq-q">האם הוא מתחיל לבצע בקשה יומיומית (להתלבש, לשבת לאכול, לכבות מסך) אחרי בקשה אחת או שתיים?</div><div class="freq-options"><input type="radio" name="9. התנהגותי: האם הוא מתחיל לבצע בקשה יומיומית (להתלבש, לשבת לאכול, לכבות מסך) אחרי בקשה אחת או שתיים?" id="r21" value="אף פעם"><label for="r21">אף פעם</label><input type="radio" name="9. התנהגותי: האם הוא מתחיל לבצע בקשה יומיומית (להתלבש, לשבת לאכול, לכבות מסך) אחרי בקשה אחת או שתיים?" id="r22" value="לעיתים רחוקות"><label for="r22">לעיתים רחוקות</label><input type="radio" name="9. התנהגותי: האם הוא מתחיל לבצע בקשה יומיומית (להתלבש, לשבת לאכול, לכבות מסך) אחרי בקשה אחת או שתיים?" id="r23" value="לפעמים"><label for="r23">לפעמים</label><input type="radio" name="9. התנהגותי: האם הוא מתחיל לבצע בקשה יומיומית (להתלבש, לשבת לאכול, לכבות מסך) אחרי בקשה אחת או שתיים?" id="r24" value="לעיתים קרובות"><label for="r24">לעיתים קרובות</label><input type="radio" name="9. התנהגותי: האם הוא מתחיל לבצע בקשה יומיומית (להתלבש, לשבת לאכול, לכבות מסך) אחרי בקשה אחת או שתיים?" id="r25" value="תמיד"><label for="r25">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">האם הוא מצליח לעצור את עצמו באמצע משהו שהוא נהנה ממנו, כשמבקשים ממנו?</div><div class="freq-options"><input type="radio" name="10. התנהגותי: האם הוא מצליח לעצור את עצמו באמצע משהו שהוא נהנה ממנו, כשמבקשים ממנו?" id="r26" value="אף פעם"><label for="r26">אף פעם</label><input type="radio" name="10. התנהגותי: האם הוא מצליח לעצור את עצמו באמצע משהו שהוא נהנה ממנו, כשמבקשים ממנו?" id="r27" value="לעיתים רחוקות"><label for="r27">לעיתים רחוקות</label><input type="radio" name="10. התנהגותי: האם הוא מצליח לעצור את עצמו באמצע משהו שהוא נהנה ממנו, כשמבקשים ממנו?" id="r28" value="לפעמים"><label for="r28">לפעמים</label><input type="radio" name="10. התנהגותי: האם הוא מצליח לעצור את עצמו באמצע משהו שהוא נהנה ממנו, כשמבקשים ממנו?" id="r29" value="לעיתים קרובות"><label for="r29">לעיתים קרובות</label><input type="radio" name="10. התנהגותי: האם הוא מצליח לעצור את עצמו באמצע משהו שהוא נהנה ממנו, כשמבקשים ממנו?" id="r30" value="תמיד"><label for="r30">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">האם הוא מצליח להמתין לתורו או לדבר שהוא רוצה כמה דקות, בלי שזה הופך לריב?</div><div class="freq-options"><input type="radio" name="11. התנהגותי: האם הוא מצליח להמתין לתורו או לדבר שהוא רוצה כמה דקות, בלי שזה הופך לריב?" id="r31" value="אף פעם"><label for="r31">אף פעם</label><input type="radio" name="11. התנהגותי: האם הוא מצליח להמתין לתורו או לדבר שהוא רוצה כמה דקות, בלי שזה הופך לריב?" id="r32" value="לעיתים רחוקות"><label for="r32">לעיתים רחוקות</label><input type="radio" name="11. התנהגותי: האם הוא מצליח להמתין לתורו או לדבר שהוא רוצה כמה דקות, בלי שזה הופך לריב?" id="r33" value="לפעמים"><label for="r33">לפעמים</label><input type="radio" name="11. התנהגותי: האם הוא מצליח להמתין לתורו או לדבר שהוא רוצה כמה דקות, בלי שזה הופך לריב?" id="r34" value="לעיתים קרובות"><label for="r34">לעיתים קרובות</label><input type="radio" name="11. התנהגותי: האם הוא מצליח להמתין לתורו או לדבר שהוא רוצה כמה דקות, בלי שזה הופך לריב?" id="r35" value="תמיד"><label for="r35">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">האם הוא חוזר לעצמו תוך כמה דקות אחרי כעס או אכזבה?</div><div class="freq-options"><input type="radio" name="12. התנהגותי: האם הוא חוזר לעצמו תוך כמה דקות אחרי כעס או אכזבה?" id="r36" value="אף פעם"><label for="r36">אף פעם</label><input type="radio" name="12. התנהגותי: האם הוא חוזר לעצמו תוך כמה דקות אחרי כעס או אכזבה?" id="r37" value="לעיתים רחוקות"><label for="r37">לעיתים רחוקות</label><input type="radio" name="12. התנהגותי: האם הוא חוזר לעצמו תוך כמה דקות אחרי כעס או אכזבה?" id="r38" value="לפעמים"><label for="r38">לפעמים</label><input type="radio" name="12. התנהגותי: האם הוא חוזר לעצמו תוך כמה דקות אחרי כעס או אכזבה?" id="r39" value="לעיתים קרובות"><label for="r39">לעיתים קרובות</label><input type="radio" name="12. התנהגותי: האם הוא חוזר לעצמו תוך כמה דקות אחרי כעס או אכזבה?" id="r40" value="תמיד"><label for="r40">תמיד</label></div></div>
+    <div class="form-group"><label>תארו רגע קשה טיפוסי מההתחלה ועד הסוף: מה קדם לו, איך הוא נראה, ואיך זה נגמר.</label><textarea name="13. התנהגותי: תארו רגע קשה טיפוסי מההתחלה ועד הסוף: מה קדם לו, איך הוא נראה, ואיך זה נגמר." rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>מה עוזר, ולו לרגע, כשזה קורה? ומה דווקא מחמיר?</label><textarea name="14. התנהגותי: מה עוזר, ולו לרגע, כשזה קורה? ומה דווקא מחמיר?" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>זה נראה דומה בבית ובבית הספר, או שונה? ואם שונה, במה?</label><textarea name="15. התנהגותי: זה נראה דומה בבית ובבית הספר, או שונה? ואם שונה, במה?" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>באילו שעות ביום קל לו יותר, ובאילו קשה יותר (בוקר, אחרי בית הספר, ערב)?</label><textarea name="16. התנהגותי: באילו שעות ביום קל לו יותר, ובאילו קשה יותר (בוקר, אחרי בית הספר, ערב)?" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>מה הוא עושה בעצמו בשגרה (לבוש, אכילה, מקלחת, התארגנות לבית הספר), ובמה הוא עדיין נעזר בכם?</label><textarea name="17. התנהגותי: מה הוא עושה בעצמו בשגרה (לבוש, אכילה, מקלחת, התארגנות לבית הספר), ובמה הוא עדיין נעזר בכם?" rows="2" placeholder="תארו כאן..."></textarea></div>
+  </div>
+</div>
+<div class="section" id="body">
+  <div class="section-header"><div class="part-label">חלק ג</div><h2>גוף וחושים · ויסות חושי ומודעות גוף</h2><div class="section-sub">מה מרגיע, איך הוא נע ומה הוא מרגיש בגוף</div></div>
+  <div class="section-body">
+    <div class="info-box">תחום זה בוחן איך הילד מרגיש בגוף שלו, מה מרגיע אותו ואיך הוא נע.</div>
+    <div class="freq-card"><div class="freq-q">האם הוא מתעייף מהר במאמץ גופני (ריצה, טיפוס, הליכה ארוכה)?</div><div class="freq-options"><input type="radio" name="18. גוף וחושים: האם הוא מתעייף מהר במאמץ גופני (ריצה, טיפוס, הליכה ארוכה)?" id="r41" value="אף פעם"><label for="r41">אף פעם</label><input type="radio" name="18. גוף וחושים: האם הוא מתעייף מהר במאמץ גופני (ריצה, טיפוס, הליכה ארוכה)?" id="r42" value="לעיתים רחוקות"><label for="r42">לעיתים רחוקות</label><input type="radio" name="18. גוף וחושים: האם הוא מתעייף מהר במאמץ גופני (ריצה, טיפוס, הליכה ארוכה)?" id="r43" value="לפעמים"><label for="r43">לפעמים</label><input type="radio" name="18. גוף וחושים: האם הוא מתעייף מהר במאמץ גופני (ריצה, טיפוס, הליכה ארוכה)?" id="r44" value="לעיתים קרובות"><label for="r44">לעיתים קרובות</label><input type="radio" name="18. גוף וחושים: האם הוא מתעייף מהר במאמץ גופני (ריצה, טיפוס, הליכה ארוכה)?" id="r45" value="תמיד"><label for="r45">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">האם הוא מרגיש בזמן שהוא רעב, צמא או עייף, ואומר לכם את זה?</div><div class="freq-options"><input type="radio" name="19. גוף וחושים: האם הוא מרגיש בזמן שהוא רעב, צמא או עייף, ואומר לכם את זה?" id="r46" value="אף פעם"><label for="r46">אף פעם</label><input type="radio" name="19. גוף וחושים: האם הוא מרגיש בזמן שהוא רעב, צמא או עייף, ואומר לכם את זה?" id="r47" value="לעיתים רחוקות"><label for="r47">לעיתים רחוקות</label><input type="radio" name="19. גוף וחושים: האם הוא מרגיש בזמן שהוא רעב, צמא או עייף, ואומר לכם את זה?" id="r48" value="לפעמים"><label for="r48">לפעמים</label><input type="radio" name="19. גוף וחושים: האם הוא מרגיש בזמן שהוא רעב, צמא או עייף, ואומר לכם את זה?" id="r49" value="לעיתים קרובות"><label for="r49">לעיתים קרובות</label><input type="radio" name="19. גוף וחושים: האם הוא מרגיש בזמן שהוא רעב, צמא או עייף, ואומר לכם את זה?" id="r50" value="תמיד"><label for="r50">תמיד</label></div></div>
+    <div class="form-group"><label>מה עוזר לגוף שלו להירגע? ומה מעיר אותו או מעמיס עליו?</label><textarea name="20. גוף וחושים: מה עוזר לגוף שלו להירגע? ומה מעיר אותו או מעמיס עליו?" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>איך הוא בפעילויות ידיים כמו ציור, גזירה, כתיבה ולגו? מה בא לו בקלות ומה מתסכל אותו?</label><textarea name="21. גוף וחושים: איך הוא בפעילויות ידיים כמו ציור, גזירה, כתיבה ולגו? מה בא לו בקלות ומה מתסכל אותו?" rows="2" placeholder="תארו כאן..."></textarea></div>
+  </div>
+</div>
+<div class="section" id="communication">
+  <div class="section-header"><div class="part-label">חלק ד</div><h2>תקשורתי · שפה ותקשורת</h2><div class="section-sub">הבנה, הבעה ושיחה, בעברית ובאנגלית</div></div>
+  <div class="section-body">
+    <div class="info-box">תחום זה בוחן כיצד הילד מבין ומבטא את עצמו, ואיך הוא משתמש בשפה בשיחה, בסיפור ובקשר.</div>
+    <div class="freq-card"><div class="freq-q">האם הוא מספר על אירוע (יום בבית הספר, סרט) כך שמי שלא היה שם מבין מה קרה?</div><div class="freq-options"><input type="radio" name="22. תקשורת: האם הוא מספר על אירוע (יום בבית הספר, סרט) כך שמי שלא היה שם מבין מה קרה?" id="r51" value="אף פעם"><label for="r51">אף פעם</label><input type="radio" name="22. תקשורת: האם הוא מספר על אירוע (יום בבית הספר, סרט) כך שמי שלא היה שם מבין מה קרה?" id="r52" value="לעיתים רחוקות"><label for="r52">לעיתים רחוקות</label><input type="radio" name="22. תקשורת: האם הוא מספר על אירוע (יום בבית הספר, סרט) כך שמי שלא היה שם מבין מה קרה?" id="r53" value="לפעמים"><label for="r53">לפעמים</label><input type="radio" name="22. תקשורת: האם הוא מספר על אירוע (יום בבית הספר, סרט) כך שמי שלא היה שם מבין מה קרה?" id="r54" value="לעיתים קרובות"><label for="r54">לעיתים קרובות</label><input type="radio" name="22. תקשורת: האם הוא מספר על אירוע (יום בבית הספר, סרט) כך שמי שלא היה שם מבין מה קרה?" id="r55" value="תמיד"><label for="r55">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">האם הוא מנהל שיחה של כמה סבבים: מקשיב, עונה לעניין ושואל בחזרה?</div><div class="freq-options"><input type="radio" name="23. תקשורת: האם הוא מנהל שיחה של כמה סבבים: מקשיב, עונה לעניין ושואל בחזרה?" id="r56" value="אף פעם"><label for="r56">אף פעם</label><input type="radio" name="23. תקשורת: האם הוא מנהל שיחה של כמה סבבים: מקשיב, עונה לעניין ושואל בחזרה?" id="r57" value="לעיתים רחוקות"><label for="r57">לעיתים רחוקות</label><input type="radio" name="23. תקשורת: האם הוא מנהל שיחה של כמה סבבים: מקשיב, עונה לעניין ושואל בחזרה?" id="r58" value="לפעמים"><label for="r58">לפעמים</label><input type="radio" name="23. תקשורת: האם הוא מנהל שיחה של כמה סבבים: מקשיב, עונה לעניין ושואל בחזרה?" id="r59" value="לעיתים קרובות"><label for="r59">לעיתים קרובות</label><input type="radio" name="23. תקשורת: האם הוא מנהל שיחה של כמה סבבים: מקשיב, עונה לעניין ושואל בחזרה?" id="r60" value="תמיד"><label for="r60">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">האם הוא מבקש הבהרה כשהוא לא מבין הוראה או הסבר?</div><div class="freq-options"><input type="radio" name="24. תקשורת: האם הוא מבקש הבהרה כשהוא לא מבין הוראה או הסבר?" id="r61" value="אף פעם"><label for="r61">אף פעם</label><input type="radio" name="24. תקשורת: האם הוא מבקש הבהרה כשהוא לא מבין הוראה או הסבר?" id="r62" value="לעיתים רחוקות"><label for="r62">לעיתים רחוקות</label><input type="radio" name="24. תקשורת: האם הוא מבקש הבהרה כשהוא לא מבין הוראה או הסבר?" id="r63" value="לפעמים"><label for="r63">לפעמים</label><input type="radio" name="24. תקשורת: האם הוא מבקש הבהרה כשהוא לא מבין הוראה או הסבר?" id="r64" value="לעיתים קרובות"><label for="r64">לעיתים קרובות</label><input type="radio" name="24. תקשורת: האם הוא מבקש הבהרה כשהוא לא מבין הוראה או הסבר?" id="r65" value="תמיד"><label for="r65">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">האם הוא מצליח להסביר במילים מה הוא רוצה, גם כשהוא כועס או לא מסכים?</div><div class="freq-options"><input type="radio" name="25. תקשורת: האם הוא מצליח להסביר במילים מה הוא רוצה, גם כשהוא כועס או לא מסכים?" id="r66" value="אף פעם"><label for="r66">אף פעם</label><input type="radio" name="25. תקשורת: האם הוא מצליח להסביר במילים מה הוא רוצה, גם כשהוא כועס או לא מסכים?" id="r67" value="לעיתים רחוקות"><label for="r67">לעיתים רחוקות</label><input type="radio" name="25. תקשורת: האם הוא מצליח להסביר במילים מה הוא רוצה, גם כשהוא כועס או לא מסכים?" id="r68" value="לפעמים"><label for="r68">לפעמים</label><input type="radio" name="25. תקשורת: האם הוא מצליח להסביר במילים מה הוא רוצה, גם כשהוא כועס או לא מסכים?" id="r69" value="לעיתים קרובות"><label for="r69">לעיתים קרובות</label><input type="radio" name="25. תקשורת: האם הוא מצליח להסביר במילים מה הוא רוצה, גם כשהוא כועס או לא מסכים?" id="r70" value="תמיד"><label for="r70">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">האם הוא מבין בדיחות, הגזמות וביטויים שלא אומרים בדיוק את מה שהם מתכוונים?</div><div class="freq-options"><input type="radio" name="26. תקשורת: האם הוא מבין בדיחות, הגזמות וביטויים שלא אומרים בדיוק את מה שהם מתכוונים?" id="r71" value="אף פעם"><label for="r71">אף פעם</label><input type="radio" name="26. תקשורת: האם הוא מבין בדיחות, הגזמות וביטויים שלא אומרים בדיוק את מה שהם מתכוונים?" id="r72" value="לעיתים רחוקות"><label for="r72">לעיתים רחוקות</label><input type="radio" name="26. תקשורת: האם הוא מבין בדיחות, הגזמות וביטויים שלא אומרים בדיוק את מה שהם מתכוונים?" id="r73" value="לפעמים"><label for="r73">לפעמים</label><input type="radio" name="26. תקשורת: האם הוא מבין בדיחות, הגזמות וביטויים שלא אומרים בדיוק את מה שהם מתכוונים?" id="r74" value="לעיתים קרובות"><label for="r74">לעיתים קרובות</label><input type="radio" name="26. תקשורת: האם הוא מבין בדיחות, הגזמות וביטויים שלא אומרים בדיוק את מה שהם מתכוונים?" id="r75" value="תמיד"><label for="r75">תמיד</label></div></div>
+    <div class="form-group"><label>באיזו שפה הוא מדבר בבית, עם חברים ובבית הספר? יש הבדל בין עברית לאנגלית בהבנה, בסיפור, בהומור או בהבעת רגשות?</label><textarea name="27. תקשורת: באיזו שפה הוא מדבר בבית, עם חברים ובבית הספר? יש הבדל בין עברית לאנגלית בהבנה, בסיפור, בהומור או בהבעת רגשות?" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>מה הוא עושה כשהוא לא מצליח להעביר את מה שהוא רוצה?</label><textarea name="28. תקשורת: מה הוא עושה כשהוא לא מצליח להעביר את מה שהוא רוצה?" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>יש הוראה, מילה או נושא שנראה לכם שהוא מתקשה להבין, גם כשמסבירים כמה פעמים?</label><textarea name="29. תקשורת: יש הוראה, מילה או נושא שנראה לכם שהוא מתקשה להבין, גם כשמסבירים כמה פעמים?" rows="2" placeholder="תארו כאן..."></textarea></div>
+  </div>
+</div>
+<div class="section" id="play">
+  <div class="section-header"><div class="part-label">חלק ה</div><h2>משחק וחברים · משחק וקשרים עם ילדים</h2><div class="section-sub">שותפות, גמישות, כללים ודמיון</div></div>
+  <div class="section-body">
+    <div class="info-box">תחום זה בוחן איך הילד משחק, לבד ועם אחרים, וכמה גמיש הוא במשחק ובקשר.</div>
+    <div class="freq-card"><div class="freq-q">האם הוא יוזם משחק או מפגש עם ילד אחר?</div><div class="freq-options"><input type="radio" name="30. משחק וחברים: האם הוא יוזם משחק או מפגש עם ילד אחר?" id="r76" value="אף פעם"><label for="r76">אף פעם</label><input type="radio" name="30. משחק וחברים: האם הוא יוזם משחק או מפגש עם ילד אחר?" id="r77" value="לעיתים רחוקות"><label for="r77">לעיתים רחוקות</label><input type="radio" name="30. משחק וחברים: האם הוא יוזם משחק או מפגש עם ילד אחר?" id="r78" value="לפעמים"><label for="r78">לפעמים</label><input type="radio" name="30. משחק וחברים: האם הוא יוזם משחק או מפגש עם ילד אחר?" id="r79" value="לעיתים קרובות"><label for="r79">לעיתים קרובות</label><input type="radio" name="30. משחק וחברים: האם הוא יוזם משחק או מפגש עם ילד אחר?" id="r80" value="תמיד"><label for="r80">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">האם הוא מצטרף למשחק שילדים אחרים כבר משחקים?</div><div class="freq-options"><input type="radio" name="31. משחק וחברים: האם הוא מצטרף למשחק שילדים אחרים כבר משחקים?" id="r81" value="אף פעם"><label for="r81">אף פעם</label><input type="radio" name="31. משחק וחברים: האם הוא מצטרף למשחק שילדים אחרים כבר משחקים?" id="r82" value="לעיתים רחוקות"><label for="r82">לעיתים רחוקות</label><input type="radio" name="31. משחק וחברים: האם הוא מצטרף למשחק שילדים אחרים כבר משחקים?" id="r83" value="לפעמים"><label for="r83">לפעמים</label><input type="radio" name="31. משחק וחברים: האם הוא מצטרף למשחק שילדים אחרים כבר משחקים?" id="r84" value="לעיתים קרובות"><label for="r84">לעיתים קרובות</label><input type="radio" name="31. משחק וחברים: האם הוא מצטרף למשחק שילדים אחרים כבר משחקים?" id="r85" value="תמיד"><label for="r85">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">האם הוא מקבל רעיון של ילד אחר ומשנה את המשחק בעקבותיו?</div><div class="freq-options"><input type="radio" name="32. משחק וחברים: האם הוא מקבל רעיון של ילד אחר ומשנה את המשחק בעקבותיו?" id="r86" value="אף פעם"><label for="r86">אף פעם</label><input type="radio" name="32. משחק וחברים: האם הוא מקבל רעיון של ילד אחר ומשנה את המשחק בעקבותיו?" id="r87" value="לעיתים רחוקות"><label for="r87">לעיתים רחוקות</label><input type="radio" name="32. משחק וחברים: האם הוא מקבל רעיון של ילד אחר ומשנה את המשחק בעקבותיו?" id="r88" value="לפעמים"><label for="r88">לפעמים</label><input type="radio" name="32. משחק וחברים: האם הוא מקבל רעיון של ילד אחר ומשנה את המשחק בעקבותיו?" id="r89" value="לעיתים קרובות"><label for="r89">לעיתים קרובות</label><input type="radio" name="32. משחק וחברים: האם הוא מקבל רעיון של ילד אחר ומשנה את המשחק בעקבותיו?" id="r90" value="תמיד"><label for="r90">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">האם הוא שומר על חוקי משחק וממשיך לשחק גם כשהוא מפסיד?</div><div class="freq-options"><input type="radio" name="33. משחק וחברים: האם הוא שומר על חוקי משחק וממשיך לשחק גם כשהוא מפסיד?" id="r91" value="אף פעם"><label for="r91">אף פעם</label><input type="radio" name="33. משחק וחברים: האם הוא שומר על חוקי משחק וממשיך לשחק גם כשהוא מפסיד?" id="r92" value="לעיתים רחוקות"><label for="r92">לעיתים רחוקות</label><input type="radio" name="33. משחק וחברים: האם הוא שומר על חוקי משחק וממשיך לשחק גם כשהוא מפסיד?" id="r93" value="לפעמים"><label for="r93">לפעמים</label><input type="radio" name="33. משחק וחברים: האם הוא שומר על חוקי משחק וממשיך לשחק גם כשהוא מפסיד?" id="r94" value="לעיתים קרובות"><label for="r94">לעיתים קרובות</label><input type="radio" name="33. משחק וחברים: האם הוא שומר על חוקי משחק וממשיך לשחק גם כשהוא מפסיד?" id="r95" value="תמיד"><label for="r95">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">האם הוא משחק משחקי דמיון, תפקידים או בנייה עם סיפור?</div><div class="freq-options"><input type="radio" name="34. משחק וחברים: האם הוא משחק משחקי דמיון, תפקידים או בנייה עם סיפור?" id="r96" value="אף פעם"><label for="r96">אף פעם</label><input type="radio" name="34. משחק וחברים: האם הוא משחק משחקי דמיון, תפקידים או בנייה עם סיפור?" id="r97" value="לעיתים רחוקות"><label for="r97">לעיתים רחוקות</label><input type="radio" name="34. משחק וחברים: האם הוא משחק משחקי דמיון, תפקידים או בנייה עם סיפור?" id="r98" value="לפעמים"><label for="r98">לפעמים</label><input type="radio" name="34. משחק וחברים: האם הוא משחק משחקי דמיון, תפקידים או בנייה עם סיפור?" id="r99" value="לעיתים קרובות"><label for="r99">לעיתים קרובות</label><input type="radio" name="34. משחק וחברים: האם הוא משחק משחקי דמיון, תפקידים או בנייה עם סיפור?" id="r100" value="תמיד"><label for="r100">תמיד</label></div></div>
+    <div class="form-group"><label>מי החברים שלו? תארו מפגש משחק אחד: מי יזם, במה שיחקו, איך זה התנהל ואיך הסתיים.</label><textarea name="35. משחק וחברים: מי החברים שלו? תארו מפגש משחק אחד: מי יזם, במה שיחקו, איך זה התנהל ואיך הסתיים." rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>מה קורה כשיש אי־הסכמה עם ילד אחר? איך זה נגמר?</label><textarea name="36. משחק וחברים: מה קורה כשיש אי־הסכמה עם ילד אחר? איך זה נגמר?" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>במה הוא אוהב לשחק כשהוא לבד, ולכמה זמן הוא נשאר בזה?</label><textarea name="37. משחק וחברים: במה הוא אוהב לשחק כשהוא לבד, ולכמה זמן הוא נשאר בזה?" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>מה ידוע לכם על הקשרים שלו בבית הספר, בהפסקות ובשיעורים?</label><textarea name="38. משחק וחברים: מה ידוע לכם על הקשרים שלו בבית הספר, בהפסקות ובשיעורים?" rows="2" placeholder="תארו כאן..."></textarea></div>
+  </div>
+</div>
+<div class="section" id="cognitive">
+  <div class="section-header"><div class="part-label">חלק ו</div><h2>קוגניטיבי · חשיבה, קשב ולמידה</h2><div class="section-sub">גישה למשימה, התמדה ופתרון בעיות</div></div>
+  <div class="section-body">
+    <div class="info-box">תחום זה בוחן איך הילד ניגש למשימה, מתמיד בה, פותר בעיות ומתארגן.</div>
+    <div class="freq-card"><div class="freq-q">האם הוא מתחיל משימה לבד אחרי שהבין מה צריך לעשות?</div><div class="freq-options"><input type="radio" name="39. קוגניטיבי: האם הוא מתחיל משימה לבד אחרי שהבין מה צריך לעשות?" id="r101" value="אף פעם"><label for="r101">אף פעם</label><input type="radio" name="39. קוגניטיבי: האם הוא מתחיל משימה לבד אחרי שהבין מה צריך לעשות?" id="r102" value="לעיתים רחוקות"><label for="r102">לעיתים רחוקות</label><input type="radio" name="39. קוגניטיבי: האם הוא מתחיל משימה לבד אחרי שהבין מה צריך לעשות?" id="r103" value="לפעמים"><label for="r103">לפעמים</label><input type="radio" name="39. קוגניטיבי: האם הוא מתחיל משימה לבד אחרי שהבין מה צריך לעשות?" id="r104" value="לעיתים קרובות"><label for="r104">לעיתים קרובות</label><input type="radio" name="39. קוגניטיבי: האם הוא מתחיל משימה לבד אחרי שהבין מה צריך לעשות?" id="r105" value="תמיד"><label for="r105">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">האם הוא מנסה דרך אחרת כשהדרך הראשונה לא עובדת?</div><div class="freq-options"><input type="radio" name="40. קוגניטיבי: האם הוא מנסה דרך אחרת כשהדרך הראשונה לא עובדת?" id="r106" value="אף פעם"><label for="r106">אף פעם</label><input type="radio" name="40. קוגניטיבי: האם הוא מנסה דרך אחרת כשהדרך הראשונה לא עובדת?" id="r107" value="לעיתים רחוקות"><label for="r107">לעיתים רחוקות</label><input type="radio" name="40. קוגניטיבי: האם הוא מנסה דרך אחרת כשהדרך הראשונה לא עובדת?" id="r108" value="לפעמים"><label for="r108">לפעמים</label><input type="radio" name="40. קוגניטיבי: האם הוא מנסה דרך אחרת כשהדרך הראשונה לא עובדת?" id="r109" value="לעיתים קרובות"><label for="r109">לעיתים קרובות</label><input type="radio" name="40. קוגניטיבי: האם הוא מנסה דרך אחרת כשהדרך הראשונה לא עובדת?" id="r110" value="תמיד"><label for="r110">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">האם הוא זוכר ומבצע הוראה של שניים־שלושה שלבים?</div><div class="freq-options"><input type="radio" name="41. קוגניטיבי: האם הוא זוכר ומבצע הוראה של שניים־שלושה שלבים?" id="r111" value="אף פעם"><label for="r111">אף פעם</label><input type="radio" name="41. קוגניטיבי: האם הוא זוכר ומבצע הוראה של שניים־שלושה שלבים?" id="r112" value="לעיתים רחוקות"><label for="r112">לעיתים רחוקות</label><input type="radio" name="41. קוגניטיבי: האם הוא זוכר ומבצע הוראה של שניים־שלושה שלבים?" id="r113" value="לפעמים"><label for="r113">לפעמים</label><input type="radio" name="41. קוגניטיבי: האם הוא זוכר ומבצע הוראה של שניים־שלושה שלבים?" id="r114" value="לעיתים קרובות"><label for="r114">לעיתים קרובות</label><input type="radio" name="41. קוגניטיבי: האם הוא זוכר ומבצע הוראה של שניים־שלושה שלבים?" id="r115" value="תמיד"><label for="r115">תמיד</label></div></div>
+    <div class="freq-card"><div class="freq-q">האם הוא מתארגן לבד עם הציוד והדברים שלו (תיק, בגדים, ציוד לבית הספר)?</div><div class="freq-options"><input type="radio" name="42. קוגניטיבי: האם הוא מתארגן לבד עם הציוד והדברים שלו (תיק, בגדים, ציוד לבית הספר)?" id="r116" value="אף פעם"><label for="r116">אף פעם</label><input type="radio" name="42. קוגניטיבי: האם הוא מתארגן לבד עם הציוד והדברים שלו (תיק, בגדים, ציוד לבית הספר)?" id="r117" value="לעיתים רחוקות"><label for="r117">לעיתים רחוקות</label><input type="radio" name="42. קוגניטיבי: האם הוא מתארגן לבד עם הציוד והדברים שלו (תיק, בגדים, ציוד לבית הספר)?" id="r118" value="לפעמים"><label for="r118">לפעמים</label><input type="radio" name="42. קוגניטיבי: האם הוא מתארגן לבד עם הציוד והדברים שלו (תיק, בגדים, ציוד לבית הספר)?" id="r119" value="לעיתים קרובות"><label for="r119">לעיתים קרובות</label><input type="radio" name="42. קוגניטיבי: האם הוא מתארגן לבד עם הציוד והדברים שלו (תיק, בגדים, ציוד לבית הספר)?" id="r120" value="תמיד"><label for="r120">תמיד</label></div></div>
+    <div class="form-group"><label>תארו משהו חדש שלמד או פתר לאחרונה: איך ניגש אליו, כמה זמן התמיד, ואיזו עזרה נדרשה?</label><textarea name="43. קוגניטיבי: תארו משהו חדש שלמד או פתר לאחרונה: איך ניגש אליו, כמה זמן התמיד, ואיזו עזרה נדרשה?" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>מה מושך את תשומת הלב שלו הכי הרבה, ולכמה זמן הוא נשאר שם?</label><textarea name="44. קוגניטיבי: מה מושך את תשומת הלב שלו הכי הרבה, ולכמה זמן הוא נשאר שם?" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>איך נראים שיעורי הבית: מי מתחיל, כמה זמן זה לוקח, ומה עוזר?</label><textarea name="45. קוגניטיבי: איך נראים שיעורי הבית: מי מתחיל, כמה זמן זה לוקח, ומה עוזר?" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label>מה בא לו בקלות בבית הספר, ומה דורש ממנו מאמץ (קריאה, כתיבה, חשבון, אנגלית)?</label><textarea name="46. קוגניטיבי: מה בא לו בקלות בבית הספר, ומה דורש ממנו מאמץ (קריאה, כתיבה, חשבון, אנגלית)?" rows="2" placeholder="תארו כאן..."></textarea></div>
+  </div>
+</div>
+<div class="section" id="strengths">
+  <div class="section-header"><div class="part-label">חלק ז</div><h2>הילד השלם · חוזקות, עניין ואופי</h2><div class="section-sub">שאלות פתוחות</div></div>
+  <div class="section-body">
+    <div class="info-box">בגיל הזה האישיות הייחודית של הילד כבר ברורה ומורגשת. הבנת מה שמשמח אותו ובמה הוא מצטיין עוזרת לנו לבנות תוכנית תמיכה שעובדת יחד עם הטמפרמנט הטבעי שלו.</div>
+    <div class="form-group"><label><span class="q-num">1</span>אופי: איך הייתם מתארים את האופי שלו בשלוש־ארבע מילים (למשל: סקרן, רגיש, מצחיק, נחוש)?</label><textarea name="47. הילד השלם – אופי: איך הייתם מתארים את האופי שלו בשלוש־ארבע מילים (למשל: סקרן, רגיש, מצחיק, נחוש)?" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">2</span>תחומי עניין: מה מרתק אותו במיוחד היום (נושא, תחביב, ספורט, משחק, יצירה, מוזיקה)? במה הוא יודע הכי הרבה?</label><textarea name="48. הילד השלם – תחומי עניין: מה מרתק אותו במיוחד היום (נושא, תחביב, ספורט, משחק, יצירה, מוזיקה)? במה הוא יודע הכי הרבה?" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">3</span>חיבה וקרבה: איך הוא מראה חיבה או מחפש קרבה איתכם (למשל, נשען, מספר לפני השינה, מבקש לשחק יחד)?</label><textarea name="49. הילד השלם – חיבה וקרבה: איך הוא מראה חיבה או מחפש קרבה איתכם (למשל, נשען, מספר לפני השינה, מבקש לשחק יחד)?" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">4</span>חוסן: אחרי יום קשה או אכזבה, מה הדרך הכי טובה שלו ״לאפס״ את עצמו ולמצוא רגיעה מחדש?</label><textarea name="50. הילד השלם – חוסן: אחרי יום קשה או אכזבה, מה הדרך הכי טובה שלו ״לאפס״ את עצמו ולמצוא רגיעה מחדש?" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">5</span>ניצוץ חברתי: תארו רגע שבו הוא חיבר אליו אנשים: הצחיק, שיתף גילוי או עזר למישהו.</label><textarea name="51. הילד השלם – ניצוץ חברתי: תארו רגע שבו הוא חיבר אליו אנשים: הצחיק, שיתף גילוי או עזר למישהו." rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">6</span>גאווה ומסוגלות: במה הוא גאה בעצמו, ומה היה רוצה ללמוד או לנסות?</label><textarea name="52. הילד השלם – גאווה ומסוגלות: במה הוא גאה בעצמו, ומה היה רוצה ללמוד או לנסות?" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">7</span>לב הבית: מהו הדבר האחד באופי שלו שמביא הכי הרבה שמחה לחיי המשפחה שלכם?</label><textarea name="53. הילד השלם – לב הבית: מהו הדבר האחד באופי שלו שמביא הכי הרבה שמחה לחיי המשפחה שלכם?" rows="2" placeholder="תארו כאן..."></textarea></div>
+    <div class="form-group"><label><span class="q-num">8</span>משהו נוסף: יש עוד משהו שתרצו להוסיף או לשתף אותנו בו?</label><textarea name="54. הילד השלם – משהו נוסף: יש עוד משהו שתרצו להוסיף או לשתף אותנו בו?" rows="2" placeholder="תארו כאן..."></textarea></div>
+  </div>
+</div>
+<div class="submit-area"><button type="submit" class="btn-submit">📨 שליחת השאלון</button><p class="submit-note">התשובות ישמרו בצורה מאובטחת ותשמשנה את הצוות המטפל בלבד.</p></div>
+</form>
+</div>
+<div class="footer">נועה שביט ויעל שוורץ | שאלון הורים<br>תודה על הזמן והכנות שאתם משקיעים במילוי השאלון.</div>
+<div id="success-overlay"><div class="success-card"><div class="icon">✅</div><h2>תודה על מילוי השאלון!</h2><p>תשובותיכם התקבלו ויסייעו לנו להשלים את מפת ההתפתחות של ילדכם לקראת המפגש הבא.</p><button class="btn-close-success" onclick="document.getElementById('success-overlay').classList.remove('show')">סגור</button></div></div>
+<div id="toast"></div>
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby_IWqCIIrZQTt3JFfsO7U3gaN29B-eSdGkEK0NRcK_tDygSkN-AwzxSmUd3NWaB1RI/exec';
+const DRAFT_KEY = 'mipui_draft_v2';
+
+
+function activeFields() {
+  const form = document.getElementById('mainForm');
+  return Array.from(form.elements).filter(el => el.name);
+}
+
+function updateProgress() {
+  const groups = {};
+  let filled = 0, total = 0;
+  activeFields().forEach(el => {
+    if (el.type === 'radio' || el.type === 'checkbox') {
+      if (!(el.name in groups)) groups[el.name] = false;
+      if (el.checked) groups[el.name] = true;
+    } else if (el.tagName === 'TEXTAREA' || el.type === 'text') {
+      total++; if (el.value.trim()) filled++;
+    }
+  });
+  Object.values(groups).forEach(v => { total++; if (v) filled++; });
+  const pct = total ? Math.round(filled / total * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = 'השלמת הטופס: ' + pct + '%';
+}
+
+function collectData() {
+  const d = {};
+  activeFields().forEach(el => {
+    if (el.type === 'radio') { if (!(el.name in d)) d[el.name] = ''; if (el.checked) d[el.name] = el.value; }
+    else if (el.type === 'checkbox') { if (!(el.name in d)) d[el.name] = ''; if (el.checked) d[el.name] = d[el.name] ? d[el.name] + '; ' + el.value : el.value; }
+    else if (el.tagName === 'TEXTAREA' || el.type === 'text') d[el.name] = el.value.trim();
+  });
+  d['תאריך_שליחה'] = new Date().toLocaleDateString('he-IL');
+  return d;
+}
+
+function saveDraft() {
+  try {
+    const s = {};
+    Array.from(document.getElementById('mainForm').elements).forEach((el, i) => {
+      if (!el.name) return;
+      s[i] = (el.type === 'radio' || el.type === 'checkbox') ? el.checked : el.value;
+    });
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(s));
+  } catch (e) {}
+}
+
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    Array.from(document.getElementById('mainForm').elements).forEach((el, i) => {
+      if (!(i in s)) return;
+      if (el.type === 'radio' || el.type === 'checkbox') el.checked = s[i]; else el.value = s[i];
+    });
+    markKnownEdits();
+    showToast('הטיוטה ששמרת נטענה');
+  } catch (e) {}
+}
+
+function markKnownEdits() {
+  document.querySelectorAll('[data-known="1"]').forEach(el => {
+    if (el.value !== el.defaultValue) el.classList.remove('known');
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+document.getElementById('mainForm').addEventListener('input', e => {
+  if (e.target.dataset && e.target.dataset.known === '1') e.target.classList.remove('known');
+  updateProgress(); saveDraft();
+});
+document.getElementById('mainForm').addEventListener('change', () => { updateProgress(); saveDraft(); });
+window.addEventListener('DOMContentLoaded', () => { loadDraft(); updateProgress(); });
+
+async function submitForm(e) {
+  e.preventDefault();
+  if (!APPS_SCRIPT_URL) { showToast('⚠️ הטופס עוד לא מחובר לגיליון התשובות'); return; }
+  const d = collectData();
+  try {
+    showToast('שולח את התשובות...');
+    await fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(d) });
+    try { localStorage.removeItem(DRAFT_KEY); } catch (err) {}
+    setTimeout(() => document.getElementById('success-overlay').classList.add('show'), 700);
+  } catch (err) {
+    showToast('⚠️ לא ניתן לשלוח כרגע. התשובות שמורות בדפדפן, נסו שוב מאוחר יותר.');
+  }
+}
+</script>
+</body>
+</html>
